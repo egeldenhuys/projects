@@ -1,0 +1,17 @@
+program Talker;
+{$DEFINE SMART} // Use SMART
+{$i srl-6/srl.simba}
+//{$i srl-6/lib/interfaces/chatbox.simba}
+//{$i srl-6/lib/utilities/wrappers.simba}
+
+procedure MainLoop()
+begin
+     writeln(getTextAtEx(100, 100, 200, 200, 0, 0, 3, clblue, 5, 'statChars', Letters));
+end;
+
+begin
+  clearDebug();
+  setupSRL();
+  MainLoop();
+end.
+

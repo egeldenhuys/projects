@@ -1,0 +1,162 @@
+program GuessTheNumber;
+// version 0.3
+{$DEFINE SMART}
+{$i srl/srl.simba}
+{$i srl/srl/misc/trade.simba}
+
+var
+  PreviousText, Winner : string;
+  TheNumber : Integer;
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :=''; // Username
+  Players[0].Pass :=''; // Password
+  Players[0].Nick :=''; // 3 Lower case letters of the name
+  Players[0].Active:=True;
+
+end;
+
+procedure StartGame;
+begin
+  writeln('Starting Game');
+
+  TheNumber := Random(100);
+
+  writeln('The number is: ' + ToStr(TheNumber));
+
+  SendKeys('I am thinking of a number between 0 and 100. Can you guess it?', 10, 1);
+  TypeSend('');
+
+end;
+
+procedure EndGame;
+begin
+
+  writeln('End Game');
+  writeln('Winner: ' + Winner);
+
+  wait(1000);
+  SendKeys('The number was ' + ToStr(TheNumber) + '. The winner is ' + Winner + '!', 10, 1);
+  typesend('');
+
+  wait(1000);
+  SendKeys('Please trade "Slop n Jop" for your 1k coins.', 10, 1);
+  TypeSend('');
+
+end;
+
+Procedure LowerOrHigher;
+var
+  currentText : string;
+
+begin
+
+  CurrentText := GetChatBoxText(8, clBlue);
+
+  if (currentText <> PreviousText) then
+  begin
+    if (CurrentText <> ToStr(TheNumber)) then
+    begin
+
+    try
+      // Lower or higher START
+      if (StrToInt(CurrentText) > TheNumber) then
+      begin
+        writeln('Lower Than ' + CurrentText);
+        Sendkeys('Lower than ' + CurrentText, 10, 1);
+        TypeSend('');
+
+      end else
+      begin
+        writeln('Higher Than ' + CurrentText);
+        Sendkeys('Higher than ' + CurrentText, 10, 1);
+        TypeSend('');
+      end;  // Lower or Higher END
+
+    except
+
+    end;
+
+    end;
+  end;
+  PreviousText := CurrentText;
+end;
+
+function NumberSaid : Boolean;
+var
+  i : Integer;
+  currentText : string;
+
+begin
+  result := false
+
+  for i := 1 to 8 do
+  begin
+    CurrentText := GetChatBoxText(i, clBlue);
+
+      if (CurrentText = ToStr(TheNumber)) then
+      begin
+        Winner := GetChatBoxText(i, clBlack);
+        result := True
+        writeln('The number has been said!');
+        exit;
+      end;
+
+    end; // For Loop End
+end;
+
+procedure TradeMoney;
+var
+  traded : boolean;
+
+begin
+  SendKeys('Winner trade me for 1,000 gp prize', 10, 1);
+  TypeSend('');
+
+  repeat
+    if (SomeoneTrades) then
+      if (GetChatBoxText(8, clTrade) = Winner) then
+       if (AcceptTrade) then
+       begin
+
+       end;
+
+  until(traded);
+
+
+end;
+
+procedure MainLoop;
+begin
+  StartGame;
+
+  repeat
+    LowerOrHigher;
+    wait(300);
+  until(NumberSaid);
+
+  EndGame;
+
+end;
+
+
+begin
+
+  {$IFDEF SMART}
+    SRL_SixHourFix := True;
+    Smart_FixSpeed := True;
+  {$ENDIF}
+
+  SetUpSRL;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+  MainLoop;
+
+end.
+

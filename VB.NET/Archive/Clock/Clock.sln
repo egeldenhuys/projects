@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Basic Express 2010
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Clock", "Clock\Clock.vbproj", "{738A79F2-E930-46C3-8016-92EB0EBBEE36}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ClockInstaller", "ClockInstaller\ClockInstaller.vbproj", "{A1B6340B-A703-43CB-9651-9E40BB58DE13}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Debug|x86.ActiveCfg = Debug|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Debug|x86.Build.0 = Debug|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Release|Any CPU.ActiveCfg = Release|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Release|Mixed Platforms.Build.0 = Release|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Release|x86.ActiveCfg = Release|x86
+		{738A79F2-E930-46C3-8016-92EB0EBBEE36}.Release|x86.Build.0 = Release|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Debug|x86.ActiveCfg = Debug|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Debug|x86.Build.0 = Debug|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Release|Any CPU.ActiveCfg = Release|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Release|x86.ActiveCfg = Release|x86
+		{A1B6340B-A703-43CB-9651-9E40BB58DE13}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

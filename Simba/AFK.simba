@@ -1,0 +1,21 @@
+program new;
+{$DEFINE SMART} // Use SMART
+{$i srl-6/srl.simba}
+
+procedure MainLoop()
+begin
+    mouse(400, 300, 300, 200);
+    sleep(Random(10000));
+end;
+
+begin
+  clearDebug();
+  setupSRL();
+  while true do
+  begin
+  MainLoop();
+
+  end;
+
+end.
+

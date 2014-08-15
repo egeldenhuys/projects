@@ -1,0 +1,76 @@
+program New;
+//{$DEFINE SMART}
+{$i srl/srl.simba}
+
+{$IFDEF SMART}
+    {$i srl/srl/misc/paintsmart.simba}
+{$ENDIF}
+
+var
+  LastText, LastName, CurrentText, CurrentText2, CurrentName: String;
+  PName, PName2 : TStringArray;
+
+Procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :=''; //Username
+  Players[0].Pass :=''; //Password
+  Players[0].Nick :='';
+  Players[0].Active:=True;
+end;
+
+
+begin
+  {$IFDEF SMART}
+    Smart_Server := 1;
+    Smart_Members := False;
+    Smart_Signed := True;
+    Smart_SuperDetail := False;
+  {$ENDIF}
+
+  SetUpSRL;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+
+  Repeat
+  CurrentName := GetBlackChatMessage;
+  //CurrentText := GetChatBoxText(8, 28416);  //Green
+  CurrentText := GetChatBoxText(8, clChat);   //Blue
+  //CurrentText := GetChatBoxText(8, clBlack);   //Black
+
+    PName := Explode('y', CurrentName);
+    PName2 := Explode('i', CurrentName);
+    if (PName2[0] = 'T') then
+      If (PName[0] <> 'd4') then
+        If (CurrentText <> LastText) then
+          If(CurrentText <> '') then
+            //If (CurrentText <> 'd4yl3 buck3t') then
+            begin
+              //PName := Explode(']', CurrentName);
+              //Try
+              //  SendKeys(PName[1] + ': ' + CurrentText, 1);
+              //Except
+              //end;
+              //CurrentText2 := Replace(CurrentText, 'I ', 'You');
+              //CurrentText2 := Replace(CurrentText2, 'i ', 'You');
+              SendKeys(CurrentText,10, 1);
+              //SendKeys('/' + CurrentText, 1);
+              //SendKeys('/' + CurrentName + ': ' + CurrentText, 1);
+              //SendKeys(CurrentName + ': ' + CurrentText, 1);
+              TypeSend('');
+            end;
+
+        //Writeln(Currentname + CurrentText);
+         //writeln(currentText2);
+
+    LastName := CurrentName;
+    LastText := CurrentText;
+
+    Wait(50);
+
+  Until(AllPlayersInactive)
+end.

@@ -1,0 +1,266 @@
+program ChatJoiner;
+// Version 0.1
+// Close the chat when it is open too long
+
+{$DEFINE SMART}
+{$i srl/srl.simba}
+
+var
+  LastCommand : string;
+
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :=''; // Username
+  Players[0].Pass :=''; // Password
+  Players[0].Nick :=''; // 3 Lower case letters of the name
+  Players[0].Active:=True;
+
+end;
+
+procedure OpenTab(tabName : string);
+begin
+
+  case tabName of
+    'FriendsChat':
+      begin
+      writeln('Opening tab: Friends Chat');
+      MouseBox(583, 468, 609, 498, 1);
+      end; // FriendsChat
+
+    'ClanChatVisited':
+      begin
+        writeln('Opening tab: Clan Chat');
+        MouseBox(613, 468, 639, 499, 1);
+
+        // Open Sub Tab
+        if (WaitColor(704, 450, 3516791, 10, 1000)) then
+          begin
+            writeln('Opening Tab: Visited Clan Chat');
+            MouseBox(698, 444, 710, 455, 1);
+          end; // WaitColour
+
+      end; // ClanChatVisited
+    'ChatOptions':
+    begin
+      writeln('Opening Options Tab');
+      MouseBox(644, 471, 668, 497, 1); // Click options tab
+
+      wait(100);
+
+      if (WaitColor(706, 349, 14608350, 10, 1000)) then
+      begin
+        writeln('Opening Chat Options');
+        MouseBox(683, 333, 710, 362, 1);
+      end; // WaitColour
+
+
+    end; // Options
+
+  end; // Case tabName
+
+
+end;
+
+procedure SetupChatColour;
+begin
+  OpenTab('ChatOptions');
+  Wait(500);
+
+  MouseBox(606, 238, 630, 250, 1); // Click clan tab
+
+  if (WaitColor(641, 366, 11469039, 0, 1000)) then
+    MouseBox(636, 359, 647, 369, 1);
+
+    wait(300);
+
+    MouseBox(719, 215, 729, 224, 1); // Close
+
+
+end;
+
+procedure CloseWindows;
+begin
+
+end;
+
+procedure StayActive;
+begin
+  Mouse(283, 169, 150, 150, 3);
+
+end;
+
+function IsInClanGuestChat : boolean;
+begin
+  writeln('Checking if we are in a guest clan chat...');
+  result := False
+
+   OpenTab('ClanChatVisited');
+   if (GetColor(557, 453) = 4877788) then
+    begin
+      writeln('We are in a guest clan chat');
+      result := True;
+   end else
+    begin
+      writeln('We are not in a guest clan chat');
+      result := False;
+    end;
+
+  end;
+
+function IsInFriendsChat : boolean;
+begin
+  writeln('Checking if we are in a friends chat...');
+  result := false
+
+  OpenTab('FriendsChat');
+   if (GetColor(560, 450) = 2778833) then
+   begin
+    writeln('We are in a friends chat');
+    result := True;
+   end else
+   begin
+    writeln('We are not in a friends chat');
+    result := False;
+   end;
+
+end;
+
+procedure LeaveClanGuestChat;
+begin
+  If (IsInClanGuestChat = true) then
+  begin
+    writeln('Leaving Clan Guest Chat');
+    wait(200);
+    OpenTab('ClanChatVisited');
+    wait(100);
+    MouseBox(551, 444, 563, 454, 1);
+  end;
+
+end;
+
+procedure LeaveFriendsChat;
+begin
+  if (IsInFriendsChat = true) then
+  begin
+    writeln('Leaving Friends Chat');
+    wait(200);
+    OpenTab('FriendsChat');
+    wait(100);
+    MouseBox(551, 445, 563, 464, 1);
+  end;
+
+end;
+
+procedure JoinFriendChat(name : string);
+begin
+  if (IsInFriendsChat = false) then
+  begin
+
+    writeln('Joining Friends Chat');
+    OpenTab('FriendsChat');
+    MouseBox(551, 444, 562, 465, 1); // Click the join button
+    wait(300);
+    if (WaitColor(81, 402, 0, 1, 5000)) then // wait for Black Text
+    begin
+      SendKeys(name, 10, 1);
+      wait(300);
+      TypeSend('');
+      wait(300);
+    end; // WaitColour
+  end;
+end;
+
+procedure JoinClanChat(name : string);
+begin
+  if (IsInClanGuestChat = false) then
+  begin
+    writeln('Joining clan guest chat');
+    OpenTab('ClanChatVisited');
+    MouseBox(551, 444, 563, 454, 1); // Click the join button
+    wait(300);
+    if (WaitColor(114, 399, 0, 1, 5000)) then // wait for Black Text
+    begin
+      SendKeys(name, 10, 1);
+      wait(300);
+      TypeSend('');
+      wait(300);
+    end; // WaitColour
+  end;
+
+end;
+
+function GetCommand : string;
+begin
+  result := GetChatBoxText(8, 11469039);
+
+end;
+
+procedure CheckCommands;
+var
+  CommandText : string;
+  subStrings : TStringArray;
+
+begin
+
+  CommandText := GetCommand;
+
+  if (CommandText <> LastCommand) then
+  begin
+
+  subStrings := Explode('#', CommandText);
+
+  Case subStrings[0] of
+    '@cc':
+      JoinClanChat(substrings[1]);
+
+    '@fc':
+      JoinFriendChat(substrings[1]);
+
+    '@lfc':
+      LeaveFriendsChat;
+
+    '@lcc':
+      LeaveClanGuestChat;
+
+    '@sc':
+      SetupChatColour;
+
+    end;
+  end;
+
+  lastCommand := CommandText;
+end;
+
+
+procedure MainLoop;
+begin
+  repeat
+  StayActive;
+  CheckCommands;
+
+
+  sleep(1000);
+  until(false);
+end;
+
+
+begin
+
+  {$IFDEF SMART}
+    SRL_SixHourFix := True;
+    Smart_FixSpeed := True;
+  {$ENDIF}
+
+  SetUpSRL;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+  MainLoop;
+
+end.
+

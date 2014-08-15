@@ -1,0 +1,93 @@
+program new;
+{$DEFINE SMART} // comment this line out if you don't want to use SMART
+{$i srl-6/srl.simba}
+
+
+function WithdrawCoins(x : integer): Integer;
+var
+t : integer;
+
+begin
+
+  // Click pouch
+
+  Mouse(686,574, 0,0, 1);
+
+  t := (getSystemTime() + 2000);
+
+  // wait for pouch to open
+  While GetColor(509, 463) <> 9219003 do
+  begin
+    wait(100);
+
+    If t < getSystemTime() then
+    begin
+      Exit(-1);
+    end;
+
+  end;
+
+  typeSend('1');
+
+end;
+
+function DropCoins(): Integer;
+var
+t : integer;
+x : integer;
+y : integer;
+
+begin
+  // Wait for coins
+   t := (getSystemTime() + 2000);
+
+  While FindColor(x, y, 131072, 586, 332, 618, 351) = false do
+  begin
+    wait(100);
+
+    if t < getSystemTime() then
+       exit(-1);
+
+  end;
+
+  Mouse(604, 344, 0, 0, 0);
+  Mouse(594, 406, 0, 0, 1);
+
+end;
+
+procedure Walk();
+begin
+  Mouse(292, 164, 0, 0, 1);
+end;
+
+procedure MainLoop();
+begin
+while 1 do
+  begin
+    if WithdrawCoins(1) = 0 then
+      if DropCoins() = 0 then
+        Walk;
+
+  end;
+
+end;
+
+var
+x, y : integer;
+begin
+
+  clearDebug();
+  setupSRL();
+  mouseSpeed := 100;
+
+  // Wait for coins
+  While FindColor(x, y, 131072, 586, 332, 618, 351) = false do
+  begin
+    wait(100);
+
+  end;
+
+  MainLoop();
+
+end.
+

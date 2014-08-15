@@ -1,0 +1,124 @@
+program TomatoDropper;
+// version: 0.2
+
+//  Instructions:
+//  1. Place your character on the Est side of Botany bay.
+//  2. Align the camaera to north and change the angle
+//     to the highest possible, OR just make sure the bot can
+//     click the crate.
+
+// Notes:
+//  The navbar is 50px
+
+{$DEFINE SMART}
+{$i srl/srl.simba}
+
+var
+  TomatoesDropped : Integer;
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :=''; // Username
+  Players[0].Pass :=''; // Password
+  Players[0].Nick :=''; // 3 Lower case letters of the name
+  Players[0].Active:=True;
+
+end;
+
+procedure InvFastDrop;
+var
+  slotOneX, slotOneY, offsetX, offsetY, iCounter : Integer;
+  finished : boolean;
+
+begin
+  // Assign Variables
+  slotOneX := 580;
+  slotOneY := 230;
+  OffsetX := 0; // Columns | 42
+  OffsetY := 0; // Rows | 36
+  finished := False;
+
+  repeat
+    if (offsetY = 216) then // Last Row
+    begin
+
+      Mouse(slotOneX + OffsetX, slotOneY + OffsetY, 0, 0, Mouse_Right);
+      //wait(10);
+      Mouse(slotOneX + OffsetX, slotOneY + OffsetY + 15, 0, 0, Mouse_Left);
+      //wait(10);
+
+      // Go to next column
+      offsetX := offsetX + 42
+      offsetY := 0
+
+    end else; // Not last row
+    begin
+      Mouse(slotOneX + OffsetX, slotOneY + OffsetY, 0, 0, Mouse_Right);
+      //wait(10);
+      Mouse(slotOneX + OffsetX, slotOneY + OffsetY + 46, 0, 0, Mouse_Left);
+      //wait(10);
+
+      offsetY := offsetY + 36 // next row
+    end;
+
+     writeln('OffsetX: ' + ToStr(offsetX));
+     writeln('OffsetY: ' + ToStr(offsetY));
+     writeln('-----');
+
+     if (offsetX = 168) then
+      if (offsety = 36) then
+        finished := true;
+
+  until(finished)
+  TomatoesDropped := TomatoesDropped + 28
+  SendKeys('Total Tomatoes dropped: ' + Tostr(TomatoesDropped * 7),10, 1);
+  TypeSend('');
+end;
+
+procedure TakeTomatoes;
+begin
+
+  repeat
+    MouseBox(266, 150, 266, 150, 0);
+    WaitOptionEx('ake-10', 'action', ClickLeft, 100);
+    wait(2100);
+  until(InvFull);
+
+end;
+
+procedure MainLoop;
+begin
+  repeat
+
+  if (LoggedIn) then
+  begin
+    if (InvFull = False) then
+    TakeTomatoes;
+
+    invFastDrop;
+  end;
+
+  until(AllPlayersInactive)
+end;
+
+
+begin
+
+  {$IFDEF SMART}
+    SRL_SixHourFix := True;
+    Smart_FixSpeed := True;
+  {$ENDIF}
+
+  SetUpSRL;
+  MouseSpeed := 500;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+  MainLoop;
+
+end.
+

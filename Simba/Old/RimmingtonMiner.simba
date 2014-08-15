@@ -1,0 +1,1356 @@
+program RemingtonMiner;
+{$DEFINE SMART}
+{$i srl/srl.simba}
+{$I SRL/SRL/MISC/SMARTGRAPHICS.SIMBA}
+{$i sps/sps.simba}
+{$I SRL/SRL/Skill/magic.simba}
+{$i ObjectDTM/ObjDTMInclude.simba}
+
+const
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@ Commit Program Stats @@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+  srlstats_user     = 'Anonymous';   // your srl stats username
+  srlstats_password = 'Anonymous';   // your srl stats password
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@ Smart Setup Constants @@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+  Server            = 0;     // enter "0" to pick a Random server.
+  Members           = False;  // is this player a member
+  NumbOfPlayers     = 1;      // how many players should be active
+  StartPlayer       = 0;      // the player who should be first used
+  LoadsToDo         = 10;     // Set how many repetitions to do of a certain Activity
+  PowerMine         = False;  // True Or False For Drop Ore
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@ Script Setup Settings @@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+  OreChoice         = 0; // Valid Mining Choices
+                         // 0 --- Copper
+                         // 1 --- Clay
+                         // 2 --- Gold
+                         // 3 --- Iron
+                         // 4 --- Tin
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@ Script Information @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+  Author            = 'VastlySuperior';
+  Name              = 'Rimmington All Ore Mining Operation';
+  Version           = '1.10';
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@       To Do List        @@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{---------------------------------------------------------------------------
+
+1) Better And Faster Ore Detection Routine
+2) Break System Implementation
+3)
+4)
+5)
+6)
+7)
+8)
+9)
+----------------------------------------------------------------------------}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@    Revision History     @@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{---------------------------------------------------------------------------
+1) Version 1.00 Beta Released                               --->  29/08/2012
+2) Version 1.10 Beta Released                               --->  31/08/2012
+3)
+4)
+----------------------------------------------------------------------------}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@ Program Start From Here @@@@@@@@@@@@@@@@@@@@@@@@@@}
+{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@}
+var
+  Path:TPointArray;
+  OreSpot:Tpoint;
+  Desc:String;
+  Start_Time, End_Time, TotalTime, TripStart, TripEnd, TripTotal, Colour,
+  TolR, Cam, CopperLoads, ClayLoads, GoldLoads, IronLoads, TinLoads,
+  TotalLoads, MCurrentXP, MOriginalXP, CMSkillLevel, MSkillGain,
+  TotalXP, OMSkillLevel: Integer;
+  MineFirstRun, LostMyWay:Boolean;
+  MBox:TBox;
+
+procedure DeclarePlayers;                                     // Setup Players
+Begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+  with players[0] do
+  Begin
+    Name        := '';                                 // Player Username
+    Pass        := '';                                 // Player Password
+    Pin         := '';                                 // Player Bankpin Number
+    Nick        := '';                                 // Player Nickname
+    Worldinfo   := [Members,Server];
+    Boxrewards  := ['xp','xp','lamp'];
+    Lampskill   := Skill_Crafting;
+    Active      := True;
+  End;
+End;
+
+function InArea(Pt1, Pt2: TPoint): Boolean;       // Look If In Specific Area
+var                                               // Credits to Mat's InArea function
+Loc: TPoint;
+Box: TBox;
+Begin
+  Loc := SPS_GetMyPos;
+  Box := PointToBox(Pt1, Pt2);
+  If (PointInBox(Loc, Box)) then
+  Begin
+    Result := True
+  End else
+  Begin
+    Result := False;
+  End;
+End;
+
+procedure Statsguise(wat:string);                   // status update in pinbar
+Begin
+  Status(wat);
+  Disguise(wat);
+End;
+
+procedure Antiban;                                        // Antiban Procedure
+Begin
+  Case Random(400) of
+    20: Begin RandomRClick; End;
+    40: Begin Wait(2500 + Random(4500)) End;
+    60: Begin PickUpMouse; End;
+    80: Begin HoverSkill('Mining', False); End;
+    100: Begin Boredhuman; End;
+    120: Begin RandomMovement; End;
+    140: Begin ExamineInv; End;
+    160: Begin HoverSkill('Random', False); End;
+  End;
+End;
+
+Procedure GlobalFailSafe(Reason:String);                    // Global FailSafe
+Begin
+  If(not(LoggedIn))then
+    Exit;
+  WriteLn('We Have A Bug. Kill IT !!');
+  Players[CurrentPlayer].Loc := Reason;
+  LogOut;
+  TerminateScript;
+End;
+
+procedure Proggy;                                            // Progress Report
+Begin
+  If (CMSkillLevel = OMSkillLevel) then
+  Begin
+    MSkillGain := CMSkillLevel;
+  end else
+  Begin
+    MSkillGain := (OMSkillLevel - CMSkillLevel);
+  End;
+  TotalLoads := ((CopperLoads + ClayLoads + GoldLoads + IronLoads + TinLoads) * 28);
+  TotalXP := (MCurrentXP)
+   WriteLn('');
+   WriteLn('');
+   WriteLn('/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\');
+   WriteLn('@        ***********************************************         @');
+   WriteLn('@        *     Rimmington All Ore Mining Operation     *         @');
+   WriteLn('@        ***********************************************         @');
+   WriteLn('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+   WriteLn('@                                                                @');
+   WriteLn('@   Bot Running For    : ' + TimeRunning + '                      ');
+   WriteLn('@   Total Loads Done   : ' + IntToStr(Totalloads) + '             ');
+   WriteLn('@   Copper Mined       : ' + IntToStr(28 * CopperLoads) + '       ');
+   WriteLn('@   Clay Mined         : ' + IntToStr(28 * ClayLoads) + '         ');
+   WriteLn('@   Gold Mined         : ' + IntToStr(28 * GoldLoads) + '         ');
+   WriteLn('@   Iron Mined         : ' + IntToStr(28 * IronLoads) + '         ');
+   WriteLn('@   Tin Mined          : ' + IntToStr(28 * TinLoads) + '          ');
+   WriteLn('@   Total Exp Gained   : ' + IntToStr(TotalXP) + '                ');
+   WriteLn('@   Mining Skill Gained: ' + IntToStr(MSkillGain) + '             ');
+   WriteLn('@                                                                 ');
+   WriteLn('@   ' + Name + ' by ' + Author + ' Ver: ' + Version + '           ');
+   WriteLn('@                                                                @');
+   WriteLn('\@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/');
+   WriteLn(' ');
+   WriteLn(' ');
+//   SRLRandomsReport;
+//   Stats_Commit;
+  If (TotalLoads = (10 * 28)) Then
+  Begin
+    GlobalFailSafe('Because I Feel Like It');
+  End;
+End;
+
+Procedure Commit;
+begin
+
+    WriteLn('Updated SRL Stats')
+end;
+
+procedure Compass;                                // Set The Compass To North
+Begin
+  ClickNorth(SRL_ANGLE_NONE);
+End;
+
+Procedure Lost;                                 // Reset Bot After It Is Lost
+var
+  DTM_TelePort, x, y, TempTime:Integer;
+Begin
+  Disguise('Recovering From A Lost Situation');
+  WriteLn('Recovering From A Lost Situation');
+  LostMyWay := True;
+  DTM_TelePort := DTMFromString('mggAAAHicY2NgYPgNxGJQ/J6RgeEdEP8Hsp8CcQYQpwL5yUCcC2T7AvHHTx8ZZjVlMUyqSmKY3VEMZovJKTIYAeUksWBGHBgCAHrdEMs=');
+  If not(InArea(Point(73, 152),Point(164, 234)))then
+  Begin
+    FTab(tab_Magic);
+    MouseBox(562, 217, 585, 240, mouse_Left);
+    While not(FindDTM(DTM_TelePort, x, y, MSX1, MSY1, MSX2, MSY2)) do
+    Begin
+      Wait(50);
+    End;
+    MouseBox(266, 236, 284, 260, mouse_Left);
+    Wait(20000 + Random(1000));
+  End;
+  FreeDTM(DTM_TelePort);
+  Path := [Point(277, 285), Point(213, 260), Point(146, 248), Point(98, 233), Point(119, 191)];
+  FFlag(5);
+  SPS_WalkPath(Path);
+  MarkTime(TempTime);
+  While not(InArea(Point(73, 152),Point(164, 234))) do
+  Begin
+    Wait(100);
+    If (TimeFromMark(TempTime) > 60000) Then
+    Begin
+      Lost;
+      Exit;
+    End;
+  End;
+End;
+
+procedure BeamMeUp;                                       // Transporter Room 1
+var
+  DTM_TelePort, x, y, TempTime:Integer;
+Begin
+  Disguise('Going To Transporter Room');
+  Start_Time := GetTimeRunning;
+  DTM_TelePort := DTMFromString('mggAAAHicY2NgYPgNxGJQ/J6RgeEdEP8Hsp8CcQYQpwL5yUCcC2T7AvHHTx8ZZjVlMUyqSmKY3VEMZovJKTIYAeUksWBGHBgCAHrdEMs=');
+  WriteLn('AttempTing Transport');
+  FTab(tab_Magic);
+  MouseBox(562, 217, 585, 240, mouse_Left);
+  While not(FindDTM(DTM_TelePort, x, y, MSX1, MSY1, MSX2, MSY2)) do
+  Begin
+    Wait(50);
+    If (TimeFromMark(TempTime) > 30000) Then
+    Begin
+      FTab(tab_Magic);
+      MouseBox(562, 217, 585, 240, mouse_Left);
+      Wait(400);
+      MarkTime(TempTime);
+    End;
+  End;
+  Flag;
+  MouseBox(266, 236, 284, 260, mouse_Left);
+  WriteLn('Arriving At Transporter Pad');
+  FreeDTM(DTM_TelePort);
+  MarkTime(TempTime);
+  While Not(InArea(Point(260, 260),Point(300, 300))) do
+  Begin
+    Wait(100);
+    If (TimeFromMark(TempTime) > 50000) Then
+    Begin
+      If FindSymbol(x, y, 'portal') then
+      Begin
+        Exit;
+      end else
+      Begin
+        Lost;
+        Exit;
+      End;
+    End;
+  End;
+End;
+
+procedure WalkToMine;                    // Walk To The Mine From Transporter 1
+var
+  FailSafeTime, cx, cy: Integer;
+  DP:TPoint;
+Begin
+  If(not(loggedin))then
+    Exit;
+  Disguise('Walking To Mine From The Deposito Box');
+  WriteLn('Walking To Mine From The Deposito Box');
+  If FindNormalRandoms then
+  Begin
+    If Not LoggedIn Then
+    Begin
+      Writeln('Found unsolvable random');
+      NextPlayer(False);
+    End;
+  End;
+  Compass;
+  FFlag(10);
+  DP := Point(122, 193);
+  MarkTime(FailSafeTime);
+  Path := [Point(277, 285), Point(213, 260), Point(146, 248), Point(98, 233), Point(119, 191)];
+// First Walk Procedure With First Failsafe from MarkedTime
+  MarkTime(FailSafeTime);
+  If not(InArea(Point(73, 152),Point(164, 234)))then
+  Begin
+    SPS_WalkPath(Path);
+    While not(InArea(Point(73, 152),Point(164, 234))) do
+    Begin
+      Antiban;
+      Wait(1000);
+      If TimeFromMark(FailsafeTime) > 50000 then
+      Begin
+        Break;
+      End;
+    End;
+  End;
+// Second Walk Procedure With Second Failsafe from MarkedTime
+  If not(InArea(Point(73, 152),Point(164, 234))) then
+  Begin
+    Wait(1000);
+    MarkTime(FailSafeTime);
+    SPS_BlindWalk(DP);
+  End;
+  While not(InArea(Point(73, 152),Point(164, 234))) do
+  Begin
+    If TimeFromMark(FailsafeTime) > 35000 then
+    Begin
+      WriteLn('We Are Lost Time Ran Out,Resetting Bot From Walking From The Pottery');
+      End_Time := GetTimeRunning;
+      Lost;
+      Exit;
+    End;
+  End;
+// Third Walk Procedure With Third Failsafe from MarkedTime
+  If ObjDTM_InArea('80:80:5:5:7:74:105:5:7:82:100:5:7:95:104:5:7:112:83:5:7:69:71:4:130:38:130:130:27:130:27:38', True) then
+  Begin
+    If ObjDTM_Find('80:80:5:5:7:74:105:5:7:82:100:5:7:95:104:5:7:112:83:5:7:69:71:4:130:38:130:130:27:130:27:38', cx, cy, True) then
+    Begin
+      ObjDTM_Walk('80:80:5:5:7:74:105:5:7:82:100:5:7:95:104:5:7:112:83:5:7:69:71:4:130:38:130:130:27:130:27:38', 2, 100, 5, True);
+    end else
+    Begin
+      End_Time := GetTimeRunning;
+      Lost;
+      Exit;
+    End;
+  End;
+  End_Time := GetTimeRunning;
+  TotalTime := (End_Time - Start_Time)/1000;
+  WriteLn('Walking To The Mine From The Deposito Box Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+ End;
+
+procedure MiningLoads(Choice:Integer); // Loads for the Proggy From Mining Items
+Begin
+  Case Choice of
+    0:  Begin                                              // Copper Loads Done
+          CopperLoads := CopperLoads + 1
+          TotalLoads := CopperLoads
+          // WriteLn('Copper Loads Created ' + IntToStr(CopperLoads));
+        End;
+    1:  Begin                                                // Clay Loads Done
+          ClayLoads := ClayLoads + 1
+          TotalLoads := ClayLoads
+          // WriteLn('Clay Loads Created ' + IntToStr(ClayLoads));
+        End;
+    2:  Begin                                                // Gold Loads Done
+          GoldLoads := GoldLoads + 1
+          TotalLoads := GoldLoads
+          // WriteLn('Gold Loads Created ' + IntToStr(GoldLoads));
+        End;
+    3:  Begin                                                // Iron Loads Done
+          IronLoads := IronLoads + 1
+          TotalLoads := IronLoads
+          // WriteLn('Iron Loads Created ' + IntToStr(IronLoads));
+        End;
+    4:  Begin                                                 // Tin Loads Done
+          TinLoads := TinLoads + 1
+          TotalLoads := TinLoads
+          // WriteLn('Tin Loads Created ' + IntToStr(TinLoads));
+        End;
+  End;
+End;
+
+function AutoColorCopper: Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.02, 3.98);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 4883423, MSX1, MSY1, MSX2, MSY2, 11);
+  if (Length(arP) = 0) then
+  begin
+    Writeln('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    Result := arC[i];
+    //Writeln('AutoColor = ' + IntToStr(arC[i]));
+    Break;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Writeln('AutoColor failed in finding the color.');
+end;
+
+function AutoColorTin: Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0, 0.14);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 9671579, MSX1, MSY1, MSX2, MSY2, 14);
+  if (Length(arP) = 0) then
+  begin
+    Writeln('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    Result := arC[i];
+    //Writeln('AutoColor = ' + IntToStr(arC[i]));
+    Break;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Writeln('AutoColor failed in finding the color.');
+end;
+
+function AutoColorClay: Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0, 0);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 7317447, MSX1, MSY1, MSX2, MSY2, 2);
+  if (Length(arP) = 0) then
+  begin
+    Writeln('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    Result := arC[i];
+    //Writeln('AutoColor = ' + IntToStr(arC[i]));
+    Break;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Writeln('AutoColor failed in finding the color.');
+end;
+
+function AutoColorGold: Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.01, 2.1);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 3651554, MSX1, MSY1, MSX2, MSY2, 11);
+  if (Length(arP) = 0) then
+  begin
+    Writeln('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    Result := arC[i];
+    //Writeln('AutoColor = ' + IntToStr(arC[i]));
+    Break;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Writeln('AutoColor failed in finding the color.');
+end;
+
+function AutoColorIron: Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.05, 0.93);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 3227492, MSX1, MSY1, MSX2, MSY2, 7);
+  if (Length(arP) = 0) then
+  begin
+    Writeln('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    Result := arC[i];
+    //Writeln('AutoColor = ' + IntToStr(arC[i]));
+    Break;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Writeln('AutoColor failed in finding the color.');
+end;
+
+function AutoColorRocks: Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.06, 0.74);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 6717848, MSX1, MSY1, MSX2, MSY2, 9);
+  if (Length(arP) = 0) then
+  begin
+    Writeln('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    Result := arC[i];
+//    //Writeln('AutoColor = ' + IntToStr(arC[i]));
+    Break;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Writeln('AutoColor failed in finding the color.');
+end;
+
+procedure SelectRock(Choice:Integer);       // Select The Type Of Rock To Mine
+Begin
+  Case Choice of
+    0:  Begin                                                   // Mine Copper
+          Colour := AutoColorCopper;
+          TolR := 11;
+          Desc := 'per';
+          OreSpot := Point(85,200);
+          Cam := 180;
+        End;
+    1:  Begin                                                     // Mine Clay
+          Colour := AutoColorClay;
+          TolR := 2;
+          Desc := 'lay';
+          Case Random(2) of
+          0:  Begin
+                OreSpot := Point(135,177);
+              End;
+          1:  Begin
+                OreSpot := Point(134,194);
+              End;
+          End;
+          Cam := 270;
+        End;
+    2:  Begin                                                     // Mine Gold
+          Colour := AutoColorGold;
+          TolR := 12;
+          Desc := 'old';
+          Case Random(2) of
+          0:  Begin
+                OreSpot := Point(133,214);
+              End;
+          1:  Begin
+                OreSpot := Point(130,220);
+              End;
+          End;
+          Cam := 180;
+        End;
+    3:  Begin                                                     // Mine Iron
+          Colour := AutoColorIron;
+          TolR := 7;
+          Desc := 'ron';
+          Case Random(3) of
+          0..1:  Begin
+                OreSpot := Point(139,208);
+                Cam := 150;
+              End;
+          2:  Begin
+                OreSpot := Point(95,184);
+                Cam := 0;
+              End;
+          End;
+        End;
+    4:  Begin                                                      // Mine Tin
+          Colour := AutoColorTin;
+          TolR := 14;
+          Desc := 'in or';
+          OreSpot := Point(112,218);
+          Cam := 180;
+        End;
+  End;
+End;
+
+type
+  TRadial = record
+    Length: Integer;
+    Angle: Extended;
+    Direction: String;
+  end;
+
+function GetRadial(A, B: TPoint): TRadial;                // Credit To Runaway
+var                                                       // For This Function
+  Direction: TStringArray;
+  Angle: Extended;
+begin
+  Direction := ['n', 'e', 's', 'w'];
+  Angle := Degrees(FixRad((ArcTan2(A.y - B.y, A.x - B.x) + Radians(90)) - Pi));
+  if not InRange(Round(Angle), 0, 360) then
+    Exit;
+  Result.Length := Distance(A.x, A.y, B.x, B.y);
+  Result.Angle := Angle;
+  if (Angle >= 315) then
+    Angle := 360 - Angle;
+  Result.Direction := Direction[Round(Angle / 90.0)];
+end;
+
+procedure SetLocation;
+Begin
+  Flag;
+  SPS_WalkToPos(OreSpot);
+End;
+
+function IsMining: Boolean;                       // True If Mining Animation
+var                                               // Credit To Flight
+ PBox:TBox;
+ Shift:Integer;
+Begin
+  Pbox := IntToBox(MSCx - 15, MSCy - 25, MSCx + 15, MSCy + 20);
+//  SMART_DrawBoxEx(True, False, IntToBox(MSCx - 15, MSCy - 25, MSCx + 15, MSCy + 20), ClBlue);
+  Shift := AveragePixelShift(PBox, 100, 300);
+//  Writeln(Shift);
+  Result := (Shift > 200);
+End;
+
+Function FindOre(var x,y:integer) : Boolean;
+var
+  ItemX, ItemY : Integer;
+  TPA : Array Of TPoint;
+  ATPA : T2DPointArray;
+  i : Integer;
+  PlayerBox, MBox: TPointArray;
+Begin
+  PlayerBox := TPAFromBox(IntToBox(MSCx - 15, MSCy - 25, MSCx + 15, MSCy + 20));
+  FindColorsSpiralTolerance(ItemX, ItemY, TPA, Colour, (MSCX - 80), (MSCY - 80), (MSCX + 80), (MSCY + 80), TolR)
+  ClearTPAFromTPAWrap(TPA, PlayerBox, {var}TPA);
+  SortTPAFrom(TPA, IntToPoint(MSCx, MSCy));
+  Begin
+    ATPA := SplitTPA(TPA, 10);
+    For i := 0 To High(ATPA) Do
+    Begin
+      If MiddleTPAEX(ATPA[i], ItemX, ItemY) then
+      Begin
+        MMouse(ItemX, ItemY, 1, 1);
+      End else
+        Continue;
+      If WaitUptext(Desc, 300) Then
+      Begin
+        x := ItemX;
+        y := ItemY;
+//        Writeln('We Have Found The Ore');
+        Result := True;
+        Exit;
+      End;
+    End;
+  End;
+End;
+
+Function IsVein(var VBox:TPoint): Boolean;
+var
+  VX, VY, x, y: Integer;
+  VTPA : Array Of TPoint;
+  ATPA : T2DPointArray;
+  i : Integer;
+Begin
+  SMART_DrawBoxEx(True, False, IntToBox(VBox.x - 15, VBox.y - 15, VBox.x + 15, VBox.y + 15), ClWhite)
+  FindColorsSpiralTolerance(VX, VY, VTPA, Colour, VBox.x - 15, VBox.y - 15, VBox.x + 15, VBox.y + 15, TolR)
+  Begin
+    ATPA := SplitTPA(VTPA, 6);
+    For i := 0 To High(ATPA) Do
+    Begin
+      If MiddleTPAEX(ATPA[i], VX, VY) then
+      Begin
+        MMouse(VX, VY, 1, 1);
+      End else
+        Continue;
+        WriteLn(GetUpText);
+        Result := FindColorTolerance(x, y, Colour, VBox.x - 15, VBox.y - 15, VBox.x + 15, VBox.y + 15, TolR);
+        WriteLn(Result);
+        Exit;
+    End;
+  End;
+End;
+
+procedure PowerMining;                                // Power Mining Operation
+var
+  x, y, RockCounter, FailSafeTime, TempTime, Counter: integer;
+  Mined:Boolean;
+  Ore, Player:Tpoint;
+  VBox:TBox;
+  Direction:TRadial;
+Begin
+  Disguise('At The Mining Location. Staring Mining Operation');
+//  WriteLn('At The Mining Location.');
+  If FindNormalRandoms then
+  Begin
+    If Not LoggedIn Then
+    Begin
+      Writeln('Found unsolvable random');
+      NextPlayer(False);
+    End;
+  End;
+  Start_Time := GetTimeRunning;
+  MarkTime(FailSafeTime);
+//  Writeln('Clear The Canvas');
+  SMART_ClearMS;
+  If MineFirstRun then
+  Begin
+    Writeln('Set Mining First Run True');
+    MOriginalXP := GetXPBar(2);
+    OMSkillLevel := GetSkillLevel(SKILL_MINING);
+    MineFirstRun := False;
+  End;
+  If InvFull Then
+  Begin
+    Writeln('Inventory Full, Skip This Procedure Go To The Bank');
+    MCurrentXP := GetXPBar(1);
+    MCurrentXP := (MCurrentXP - MOriginalXP);
+    End_Time := GetTimeRunning;
+    TotalTime := (End_Time - Start_Time)/1000;
+    WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+    Exit;
+  End;
+  Writeln('Select The Type Of Ore To Mine');
+  Mined := False;
+  SelectRock(OreChoice);
+  ToggleXPBar(True);
+  Writeln('Set The Location Of The Ore I`m Going To Mine');
+  SetLocation;
+  While IsMoving do
+  Begin
+    Wait(50);
+    If (TimeFromMark(FailSafeTime) > 5000) then
+    Begin
+      Break;
+    End;
+  End;
+  MakeCompass(Cam);
+  Wait(200 + Random(100));
+  SetAngle(SRL_ANGLE_HIGH);
+  MarkTime(FailSafeTime);
+  Mined := False;
+  Writeln('The Beginning Of the Mining Sequence');
+  Repeat
+    Disguise('Starting Mining For ' + Desc);
+    If FindNormalRandoms then
+    Begin
+      If Not LoggedIn Then
+      Begin
+        Writeln('Found unsolvable random');
+        NextPlayer(False);
+      End;
+    End;
+    SelectRock(OreChoice);
+    If IsMining and (Desc = 'old') then
+    Begin
+      MarkTime(FailSafeTime);
+    End;
+    If (TimeFromMark(FailSafeTime) > (30000 + Random(300))) {and Mined} and not(IsMining) then // Failsafe 1
+    Begin
+      If (TimeFromMark(FailSafeTime) > (120000 + Random(300))) and (Desc = 'old') then // Failsafe 2
+      Begin
+        MCurrentXP := GetXPBar(1);
+        MCurrentXP := (MCurrentXP - MOriginalXP);
+        End_Time := GetTimeRunning;
+        TotalTime := (End_Time - Start_Time)/1000;
+        WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+        Lost;
+        Exit;
+      End else
+      Begin
+      If not(Desc = 'old') then
+        Begin
+          MarkTime(FailSafeTime);
+          MCurrentXP := GetXPBar(1);
+          MCurrentXP := (MCurrentXP - MOriginalXP);
+          End_Time := GetTimeRunning;
+          TotalTime := (End_Time - Start_Time)/1000;
+          WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+          Counter := 0;
+          Lost;
+          Exit;
+        End;
+      End;
+    End;
+    While IsMoving Do
+    Begin
+      Wait(10);
+    End;
+    Writeln('Start Looking For The Ore');
+      If (FindOre(x, y)) then
+      Begin
+        MBox := IntToBox(x - 10, y - 10, x + 10, y + 10);
+        VBox := IntToBox(x - 15, y - 15, x + 15, y + 15);
+        SMART_DrawBoxEx(True, False, MBox, ClGreen);
+        If not(Mined) Then
+        Begin
+          ClickMouse2(Mouse_Left);
+          MarkTime(RockCounter);
+          MarkTime(FailSafeTime);
+          Mined := True;
+          Ore := Point(x, y);
+          Writeln(Ore);
+          Player := Point(MSCX, MSCY);
+          Direction := GetRadial(Ore, Player);
+          Writeln(Direction);
+          Writeln('Clicked The Ore To Start Mining');
+        End;
+//        Wait(RandomRange(800, 1200));
+      End;
+    While IsMoving Do
+    Begin
+      Wait(10);
+    End;
+    Antiban;
+    Repeat
+      Writeln('Looking For The Vein Color');
+      If FindNormalRandoms then
+      Begin
+        If Not LoggedIn Then
+        Begin
+          Writeln('Found unsolvable random');
+          NextPlayer(False);
+        End;
+      End;
+     Until not(IsVein(Ore)) or (FindBlackChatMessage('nage')) or (TimeFromMark(RockCounter) > (3700 + Random(300))) and (not(IsMining));
+     Writeln('Next Rock');
+     Mined := False;
+     SMART_ClearCanvasArea(VBox);
+  Until (InvFull);
+  Writeln('Dropping Ore');
+  DropAll;
+  SMART_ClearMS;
+  MiningLoads(OreChoice);
+  MCurrentXP := GetXPBar(1);
+  MCurrentXP := (MCurrentXP - MOriginalXP);
+  End_Time := GetTimeRunning;
+  TotalTime := (End_Time - Start_Time)/1000;
+  WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+End;
+
+procedure Mining;                                          // Mining Operations
+var
+  x, y, RockCounter, FailSafeTime, TempTime, Counter: integer;
+  Mined:Boolean;
+  Ore, Player:Tpoint;
+  VBox:TBox;
+  Direction:TRadial;
+Begin
+  Disguise('At The Mining Location. Staring Mining Operation');
+  WriteLn('At The Mining Location.');
+  If FindNormalRandoms then
+  Begin
+    If Not LoggedIn Then
+    Begin
+      Writeln('Found unsolvable random');
+      NextPlayer(False);
+    End;
+  End;
+  Start_Time := GetTimeRunning;
+  MarkTime(FailSafeTime);
+//  Writeln('Clear The Canvas');
+  SMART_ClearMS;
+  If MineFirstRun then
+  Begin
+    Writeln('Set Mining First Run True');
+    MOriginalXP := GetXPBar(2);
+    OMSkillLevel := GetSkillLevel(SKILL_MINING);
+    MineFirstRun := False;
+  End;
+  If InvFull Then
+  Begin
+    Writeln('Inventory Full, Skip This Procedure Go To The Bank');
+    MCurrentXP := GetXPBar(1);
+    MCurrentXP := (MCurrentXP - MOriginalXP);
+    End_Time := GetTimeRunning;
+    TotalTime := (End_Time - Start_Time)/1000;
+    WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+    Exit;
+  End;
+  Writeln('Select The Type Of Ore To Mine');
+  Mined := False;
+  SelectRock(OreChoice);
+  ToggleXPBar(True);
+  Writeln('Set The Location Of The Ore I`m Going To Mine');
+  SetLocation;
+  While IsMoving do
+  Begin
+    Wait(50);
+    If (TimeFromMark(FailSafeTime) > 5000) then
+    Begin
+      Break;
+    End;
+  End;
+  MakeCompass(Cam);
+  Wait(200 + Random(100));
+  SetAngle(SRL_ANGLE_HIGH);
+  MarkTime(FailSafeTime);
+  Mined := False;
+  Writeln('The Beginning Of the Mining Sequence');
+  Repeat
+    Disguise('Starting Mining For ' + Desc);
+    If FindNormalRandoms then
+    Begin
+      If Not LoggedIn Then
+      Begin
+        Writeln('Found unsolvable random');
+        NextPlayer(False);
+      End;
+    End;
+    SelectRock(OreChoice);
+    If IsMining and (Desc = 'old') then
+    Begin
+      MarkTime(FailSafeTime);
+    End;
+    If (TimeFromMark(FailSafeTime) > (30000 + Random(300))) {and Mined} and not(IsMining) then // Failsafe 1
+    Begin
+      If (TimeFromMark(FailSafeTime) > (120000 + Random(300))) and (Desc = 'old') then // Failsafe 2
+      Begin
+        MCurrentXP := GetXPBar(1);
+        MCurrentXP := (MCurrentXP - MOriginalXP);
+        End_Time := GetTimeRunning;
+        TotalTime := (End_Time - Start_Time)/1000;
+        WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+        Lost;
+        Exit;
+      End else
+      Begin
+      If not(Desc = 'old') then
+        Begin
+          MarkTime(FailSafeTime);
+          MCurrentXP := GetXPBar(1);
+          MCurrentXP := (MCurrentXP - MOriginalXP);
+          End_Time := GetTimeRunning;
+          TotalTime := (End_Time - Start_Time)/1000;
+          WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+          Counter := 0;
+          Lost;
+          Exit;
+        End;
+      End;
+    End;
+    While IsMoving Do
+    Begin
+      Wait(10);
+    End;
+    Writeln('Start Looking For The Ore');
+      If (FindOre(x, y)) then
+      Begin
+        MBox := IntToBox(x - 10, y - 10, x + 10, y + 10);
+        VBox := IntToBox(x - 15, y - 15, x + 15, y + 15);
+        SMART_DrawBoxEx(True, False, MBox, ClGreen);
+        If not(Mined) Then
+        Begin
+          ClickMouse2(Mouse_Left);
+          MarkTime(RockCounter);
+          MarkTime(FailSafeTime);
+          Mined := True;
+          Ore := Point(x, y);
+          Writeln(Ore);
+          Player := Point(MSCX, MSCY);
+          Direction := GetRadial(Ore, Player);
+          Writeln(Direction);
+          Writeln('Clicked The Ore To Start Mining');
+        End;
+      End;
+    While IsMoving Do
+    Begin
+      Wait(10);
+    End;
+    Antiban;
+    Repeat
+      Writeln('Looking For The Vein Color');
+      If FindNormalRandoms then
+      Begin
+        If Not LoggedIn Then
+        Begin
+          Writeln('Found unsolvable random');
+          NextPlayer(False);
+        End;
+      End;
+     Until not(IsVein(Ore)) or (FindBlackChatMessage('nage')) or (TimeFromMark(RockCounter) > (3700 + Random(300))) and (not(IsMining));
+     Writeln('Next Rock');
+     Mined := False;
+     SMART_ClearCanvasArea(VBox);
+  Until (InvFull);
+  Writeln('Inventory Is Full, Going To The Bank Now');
+  SMART_ClearMS;
+  MiningLoads(OreChoice);
+  MCurrentXP := GetXPBar(1);
+  MCurrentXP := (MCurrentXP - MOriginalXP);
+  End_Time := GetTimeRunning;
+  TotalTime := (End_Time - Start_Time)/1000;
+  WriteLn('Mining ' + Desc + ' Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+End;
+
+ procedure WalkToDepBox;                      // Walk To The Pump To Soften Clay
+var
+  FailSafeTime, cx, cy: Integer;
+  DP:TPoint;
+Begin
+  If(not(loggedin))then
+    Exit;
+  Disguise('Walking To The Deposito Box');
+  WriteLn('Walking To The Deposito Box');
+  If FindNormalRandoms then
+  Begin
+    If Not LoggedIn Then
+    Begin
+      Writeln('Found unsolvable random');
+      NextPlayer(False);
+    End;
+  End;
+  If InvEmpty then
+  Begin
+    Exit;
+  End;
+  Compass;
+  FFlag(10);
+  DP := Point(407, 205);
+  MarkTime(FailSafeTime);
+  Path := [Point(286, 277), Point(332, 274), Point(331, 218), Point(378, 205), Point(407, 205)];
+// First Walk Procedure With First Failsafe from MarkedTime
+  MarkTime(FailSafeTime);
+  If not(InArea(Point(382, 186),Point(427, 210)))then
+  Begin
+    SPS_WalkPath(Path);
+    While not(InArea(Point(382, 186),Point(427, 210))) do
+    Begin
+      Antiban;
+      Wait(1000);
+      If TimeFromMark(FailsafeTime) > 50000 then
+      Begin
+        Break;
+      End;
+    End;
+  End;
+// Second Walk Procedure With Second Failsafe from MarkedTime
+  If not(InArea(Point(382, 186),Point(427, 210))) then
+  Begin
+    Wait(1000);
+    MarkTime(FailSafeTime);
+    SPS_BlindWalk(DP);
+  End;
+  While not(InArea(Point(382, 186),Point(427, 210))) do
+  Begin
+    If TimeFromMark(FailsafeTime) > 35000 then
+    Begin
+      WriteLn('We Are Lost Time Ran Out,Resetting Bot From Walking From The Pottery');
+      End_Time := GetTimeRunning;
+      Lost;
+      Exit;
+    End;
+  End;
+  End_Time := GetTimeRunning;
+  TotalTime := (End_Time - Start_Time)/1000;
+  WriteLn('Walking To The Deposito Box From The Mine Took ' + IntToStr(TotalTime) + ' Seconds To Complete');
+ End;
+
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+  X, Y, Z: Extended;
+function AutoColorDepBox: Integer;
+var
+
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.12, 0.12);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 5793394, MSX1, MSY1, MSX2, MSY2, 4);
+  if (Length(arP) = 0) then
+  begin
+    Writeln('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    ColorToXYZ(arC[i], X, Y, Z);
+
+    if (X >= 12.95) and (X <= 14.76) and (Y >= 13.2) and (Y <= 15.09) and (Z >= 10.59) and (Z <= 12.12) then
+    begin
+      Result := arC[i];
+//      //Writeln('AutoColor = ' + IntToStr(arC[i]));
+      Break;
+    end;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Writeln('AutoColor failed in finding the color.');
+end;
+
+procedure MakeDeposit;
+Begin
+  Wait(300 + random(150));
+  While IsMoving do
+  Begin
+    Wait(50);
+  End;
+  Mouse(311, 279, 5, 5, 1);
+  Wait(1000 + random(350));
+  Proggy;
+End;
+
+  DBox,x,y,i:Integer;
+  aFound:Extended;
+  InvDeposited:Boolean;
+  OwnerTPA : TPointArray;
+  MyPoint : TPoint;
+procedure DepositOre;
+var
+
+Begin
+  If InvEmpty then
+  Begin
+    Exit;
+  End;
+  DBox := DTMFromString('mwQAAAHic42RgYGAFYiYg5gBiRijNCRVngNIsUDl2KGaAinFAaRAozYhiyI4PYqjMjgWzi9MiwOzyrGgwG4SNoObhw4xEYDgAAJBTC5Y=');
+  SetAngle(srl_angle_high);
+  Flag;
+  While not(DepositScreen) do
+  Begin
+    if (IsUpText('ank')) then
+    begin
+      // WriteLn('Second Find');
+      ClickMouse2(mouse_left)
+      Wait(1000+random(350));
+      Break;
+    end;
+    While not(IsUpText('ank')) do
+    Begin
+      if (IsUpText('ank')) then
+      begin
+        // WriteLn('Third Find');
+        ClickMouse2(mouse_left);
+        Break;
+      end;
+      // WriteLn('Begin Search');
+      x:=MSCX;
+      y:=MSCY;
+      if FindObjCustom(x, y, ['box'], [AutoColorDepBox], 4) then
+      Begin
+        if (IsUpText('ank')) then
+        begin
+          // WriteLn('First Find');
+          ClickMouse2(mouse_left);
+          Break;
+        end;
+        Wait(1000 + random(350));
+      end;
+      Wait(350 + random(350));
+    End;
+  End;
+  MakeDeposit;
+  // WriteLn('Desposited ' + Desc);
+  FreeDTM(DBox);
+End;
+
+procedure ArriveAtLocation;                                 // Arrival Location
+var
+  DTM_TelePort, x, y:Integer;
+Begin
+  Disguise('Setup Location For First Time Use');
+  DTM_TelePort := DTMFromString('mggAAAHicY2NgYPgNxGJQ/J6RgeEdEP8Hsp8CcQYQpwL5yUCcC2T7AvHHTx8ZZjVlMUyqSmKY3VEMZovJKTIYAeUksWBGHBgCAHrdEMs=');
+  If InArea(Point(268, 267),Point(294, 293)) then
+  Begin
+    Path := [Point(277, 285), Point(213, 260), Point(146, 248), Point(98, 233), Point(119, 191)];
+    SPS_WalkPath(Path);
+  end else
+  Begin
+  If not(InArea(Point(73, 152),Point(164, 234)))then
+  Begin
+  WriteLn('Setup Location For First Time Use');
+    FTab(tab_Magic);
+    MouseBox(562, 217, 585, 240, mouse_Left);
+    While not(FindDTM(DTM_TelePort, x, y, MSX1, MSY1, MSX2, MSY2)) do
+    Begin
+      Wait(50);
+    End;
+    MouseBox(266, 236, 284, 260, mouse_Left);
+    Wait(20000 + Random(1000));
+    Path := [Point(277, 285), Point(213, 260), Point(146, 248), Point(98, 233), Point(119, 191)];
+    SPS_WalkPath(Path);
+  End;
+  End;
+  FreeDTM(DTM_TelePort);
+End;
+
+  I: Integer;
+  Param: TVariantArray;
+  ArrayOfActivity: TStringArray;
+  ArrayOfChoices: TVariantArray;
+procedure MainLoop;
+var
+
+Begin
+  If Powermine then
+  Begin
+    ArrayOfActivity := ['PowerMining'];
+  end else
+    ArrayOfActivity := ['Mining', 'BeamMeUp', 'WalkToDepBox', 'DepositOre', 'BeamMeUp', 'WalkToMine'];
+  SetLength(ArrayOfChoices, Length(ArrayOfActivity));
+  If (TotalLoads = LoadsToDo) Then
+  Begin
+    If FindNormalRandoms then
+    Begin
+      If Not LoggedIn Then
+      Begin
+      Writeln('Found unsolvable random');
+      NextPlayer(False);
+      End;
+    End;
+    BeamMeUp;
+    WalkToDepBox;
+    DepositOre;
+    Proggy;
+    LogOut;
+    TerminateScript;
+  End else
+  Begin
+    TripStart := GetTimeRunning;
+    For I := 0 To High(ArrayOfActivity) Do
+    Begin
+      If LostMyWay then
+      Begin
+        TripEnd := GetTimeRunning;
+        TripTotal := (TripEnd - TripStart);
+        WriteLn('Mining Ore And Banking It Took ' + IntToStr(TripTotal) + ' To Complete');
+        Exit;
+      End;
+      ArrayOfChoices[I] := CallProc(ArrayOfActivity[I], Param);
+    End;
+    TripEnd := GetTimeRunning;
+    TripTotal := (TripEnd - TripStart);
+    WriteLn('Mining Ore And Banking It Took ' + IntToStr(TripTotal) + ' To Complete');
+  End;
+End;
+
+procedure SetupClient;                                // Setup Client For Run
+Begin
+  WriteLn('Start Bot Client');
+  SRL_SIXHOURFIX := True;
+  SMART_FIXSPEED := True;
+  Setupsrl;
+  SRL_EnableNavBar;
+  Objdtm_Setup;
+  DeclarePlayers;
+  If not (loggedin) then
+  Begin
+    LoginPlayertoLob;
+    OpenWorldScreen;
+    SelectWorld(Server);
+    LoginPlayer;
+    Wait(4000+Random(400));
+  End;
+  SPS_Setup(RUNESCAPE_OTHER,['remington']);
+End;
+
+Begin                                                       // Begin Main Loop
+  SetupClient;
+  Compass;
+  SetAngle(srl_angle_high);
+  ToggleXPBar(True);
+  MineFirstRun := True;
+  ArriveAtLocation;
+  Repeat
+    LostMyWay := False;
+    MainLoop;
+  Until allplayersinactive;
+End.

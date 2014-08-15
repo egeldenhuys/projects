@@ -1,0 +1,48 @@
+program new;
+{$DEFINE SMART} // comment this line out if you don't want to use SMART
+{$i srl-6/srl.simba}
+{$I SPS/lib/SPS-RS3.Simba}
+
+procedure runToMine();
+var
+   pathToMine: TPointArray;
+begin
+  if not isLoggedIn() then
+    exit;
+
+  pathToMine := [Point(102, 194), Point(114, 194), Point(123, 187), Point(132, 180), Point(142, 172), Point(149, 161), Point(155, 152), Point(159, 144), Point(168, 142)];
+
+  if SPS.walkPath(pathToMine) then
+    minimap.waitPlayerMoving()
+  else
+    writeLn('We failed to walk to the mine');
+
+end;
+
+procedure runToMine2();
+var
+   pathToMine: TPointArray;
+begin
+  if not isLoggedIn() then
+    exit;
+
+  pathToMine := [Point(168, 142), Point(159, 144), Point(155, 152), Point(149, 161), Point(142, 172), Point(132, 180), Point(123, 187), Point(114, 194), Point(102, 194)];
+
+  if SPS.walkPath(pathToMine) then
+    minimap.waitPlayerMoving()
+  else
+    writeLn('We failed to walk to the mine');
+
+end;
+
+begin
+  clearDebug();
+  setupSRL();
+  SPS.setup('map_fountain', RUNESCAPE_OTHER);  // Setup our map
+  while true do
+  begin
+  runToMine();
+  runToMine2();
+  end;
+end.
+

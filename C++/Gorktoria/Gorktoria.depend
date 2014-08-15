@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1389614061 source:c:\users\evert\dropbox\sdd\projects\c++\gorktoria\main.cpp
+	<iostream>
+	"header.h"
+
+1389614052 c:\users\evert\dropbox\sdd\projects\c++\gorktoria\header.h
+

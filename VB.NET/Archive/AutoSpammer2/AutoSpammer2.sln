@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Basic Express 2010
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "AutoSpammer2", "AutoSpammer2\AutoSpammer2.vbproj", "{C56AE3B0-70F7-4A0A-B629-BC55F10A2296}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C56AE3B0-70F7-4A0A-B629-BC55F10A2296}.Debug|x86.ActiveCfg = Debug|x86
+		{C56AE3B0-70F7-4A0A-B629-BC55F10A2296}.Debug|x86.Build.0 = Debug|x86
+		{C56AE3B0-70F7-4A0A-B629-BC55F10A2296}.Release|x86.ActiveCfg = Release|x86
+		{C56AE3B0-70F7-4A0A-B629-BC55F10A2296}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

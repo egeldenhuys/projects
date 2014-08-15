@@ -1,0 +1,32 @@
+program MultiLog;
+{$DEFINE SMART} // This is how we include SMART; it HAS to be called BEFORE SRL!
+{$i srl/srl.simba}
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name := ''; // Username
+  Players[0].Pass := ''; // Password
+  Players[0].Nick := ''; // 3-4 lowercase letters from username; used for random event detection
+  Players[0].Active := True; // Set to true if you want to use Player 0
+  Players[0].Pin := ''; // Leave blank if the player doesn't have a bank pin
+end;
+
+begin
+SRL_SixHourFix := True;
+Smart_FixSpeed := True;
+
+SetupSmart(True);
+SetupSmart(True);
+SetupSmart(True);
+SetupSmart(True);
+
+  ClearDebug;
+  SetupSRL;
+  DeclarePlayers;
+  ActivateClient;
+  LoginPlayer;
+end.

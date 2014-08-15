@@ -1,0 +1,169 @@
+program Login;
+{$DEFINE SMART} // Use SMART
+{$i srl-6/srl.simba}
+
+function NeedReset() : string
+var
+hFile : integer;
+s : string;
+
+begin
+    // Open the file
+    hFile := OpenFile('C:\Users\Mittins\Desktop\Reset.txt', True);
+
+    // Read the first character
+    ReadFileString(hFile, s, 1);
+
+    // Close the file
+    CloseFile(hFile);
+
+    // Return the character
+    result := s;
+
+end;
+
+function NeedWorld() : string
+var
+hFile : integer;
+s : string;
+
+begin
+    // Open the file
+    hFile := OpenFile('C:\Users\Mittins\Desktop\World.txt', True);
+
+    // Read the first character
+    ReadFileString(hFile, s, 1);
+
+    // Close the file
+    CloseFile(hFile);
+
+    // Return the character
+    result := s;
+
+end;
+
+function NeedLogin() : string
+var
+hFile : integer;
+s : string;
+
+begin
+    // Open the file
+    hFile := OpenFile('C:\Users\Mittins\Desktop\Login.txt', True);
+
+    // Read the first character
+    ReadFileString(hFile, s, 1);
+
+    // Close the file
+    CloseFile(hFile);
+
+    // Return the character
+    result := s;
+
+end;
+
+procedure Login()
+var
+done : boolean := false;
+
+begin
+  print('Waiting for Login...');
+
+  // Login Check loop
+  while done = false do
+  begin
+
+    // Get login request state
+    if NeedLogin() = '1' then
+    begin
+        ClickMouse(404, 397, 1);
+        print('Clicked the login button!');
+        done := true;
+    end;
+
+    sleep(100);
+
+  end;
+
+end;
+
+procedure CloseValidate()
+begin
+  print('Waiting for validate window');
+
+  sleep(5000);
+  if GetColor(306, 465) = 1 then
+    ClickMouse(405, 426, 1);
+
+end;
+
+procedure EnterWorld()
+var
+done : boolean := false;
+
+begin
+  print('Waiting for World...');
+
+  // World Check loop
+  while done = false do
+  begin
+
+    // Get World request state
+    if NeedWorld() = '1' then
+    begin
+        ClickMouse(599, 509, 1);
+        print('Clicked the World button!');
+        done := true;
+    end;
+
+    sleep(100);
+
+  end;
+
+end;
+
+procedure Reset()
+var
+done : boolean := false;
+
+begin
+  print('Waiting for Reset...');
+
+  // Reset Check loop
+  while done = false do
+  begin
+
+    // Get Reset request state
+    if NeedReset() = '1' then
+    begin
+        print('We have been reset!');
+        done := true;
+    end;
+
+    sleep(5000);
+
+  end;
+
+end;
+
+procedure MainLoop()
+begin
+  Login();
+  CloseValidate();
+  EnterWorld();
+  Reset();
+
+  sleep(1000);
+end;
+
+
+
+begin
+  clearDebug();
+  setupSRL();
+
+  while true do
+    MainLoop();
+
+end.
+

@@ -1,0 +1,112 @@
+program ChatRecorder;
+{$DEFINE SMART}
+{$i srl/srl.simba}
+
+var
+  LastText, LastName, CurrentText, CurrentName, TextCollection: String;
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :=''; // Username
+  Players[0].Pass :=''; // Password
+  Players[0].Nick :=''; // 3 Lower case letters of the name
+  Players[0].Active:=True;
+
+end;
+
+function WriteToFile(Text : string): Boolean;
+var
+  thePath : string;
+  theFile : Integer;
+
+begin
+  thePath := '\\EVERT-DELL\Dropbox\Public\DropStats\ChatLog_1.txt';
+
+   try
+    theFile := AppendFile(thePath); // Saves the file to thePath and names it 'FileName'
+  except // An exception would be thrown most likely if there was an invalid file name
+    Writeln('Error opening file!');
+  finally
+    Writeln('Done trying to open file');
+  end;
+
+
+  if (WriteFileString(theFile, Text + #13 + #10)) then
+    Result := True;
+
+  CloseFile(theFile);
+
+end;
+
+procedure StayActive;
+begin
+  Mouse(283, 169, 150, 150, 3);
+
+end;
+
+procedure MainLoop;
+var
+  tCounter, tCounter2 : integer;
+
+begin
+  repeat
+  CurrentName := GetBlackChatMessage; //Black
+  CurrentText := GetChatBoxText(8, clChat);   //Blue
+
+        If (CurrentText <> LastText) then
+          If(CurrentText <> '') then
+            TextCollection := TextCollection + Currentname + CurrentText + #13 + #10;
+
+
+
+
+    LastName := CurrentName;
+    LastText := CurrentText;
+
+    tCounter := tCounter + 1
+    tCounter2 := tCounter2 + 1
+
+
+
+    if tCounter = 6000 then
+    begin
+      StayActive();
+      tCounter := 0;
+    end;
+
+    if tCounter2 = 500 then
+    begin
+      if (WriteToFile(TextCollection)) then
+              Writeln('Successfully wrote to file!')
+            else
+              Writeln('Error writing to file');
+            end;
+
+            TextCollection := '';
+      tCounter2 := 0;
+
+
+    Wait(10);
+  until(false)
+end;
+
+
+begin
+
+  {$IFDEF SMART}
+    SRL_SixHourFix := True;
+    Smart_FixSpeed := True;
+  {$ENDIF}
+
+  SetUpSRL;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+  MainLoop;
+
+end.
+

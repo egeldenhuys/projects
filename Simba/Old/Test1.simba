@@ -1,0 +1,78 @@
+program New;
+{$DEFINE SMART}
+{$i srl/srl.simba}
+
+Procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :='a1@123qw.tk';
+  Players[0].Pass :='123123';
+  Players[0].Nick :='';
+  Players[0].Active:=True;
+end;
+
+procedure EnterPortal;
+var x, y: integer;
+var doneJ: boolean;
+
+begin
+writeln('EnterPortal');
+
+    repeat
+    if FindObj(x, y, 'nter', 4291028, 10) then
+    begin
+      Mouse(x, y, 0, 0, false);
+      ChooseOption('nter');
+      donej := true;
+end;
+  until(doneJ);
+end;
+
+//SetCompass
+
+procedure SetCompass;
+
+begin
+      MakeCompass('N');
+
+end;
+
+procedure TeleportNpc;
+var x, y: Integer;
+var doneJ: boolean;
+
+begin
+writeln('TeleportNpc');
+      repeat
+    if FindObj(x, y, 'alk', 2237220, 10) then
+    begin
+      Mouse(x, y, 0, 0, false);
+      ChooseOption('eleport');
+      doneJ := true;
+    end;
+
+  until(false);
+end;
+
+
+procedure MainLoop;
+begin
+   repeat
+   writeln('MainLoop');
+EnterPortal;
+TeleportNpc;
+until(false);
+
+end;
+
+begin
+  SetUpSRL;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+  SetCompass;
+  MainLoop;
+end.

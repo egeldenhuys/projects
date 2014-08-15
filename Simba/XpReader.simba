@@ -1,0 +1,256 @@
+program XpReader;
+//{$DEFINE SMART}
+{$i srl-6/srl.simba}
+
+procedure GetXpLocation()
+var
+x, y : integer
+begin
+  findColor(x, y, 14474460, 0, 0, 799, 599);
+  print(ToStr(x) + ', ' + ToStr(y));
+
+
+end;
+
+(*
+GetXp() : integer;
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+    function getColor(): integer;
+
+Reads the XP from the XP counter
+
+.. note::
+
+    - by Zubripent
+
+Example:
+
+.. code-block:: pascal
+
+     print(GetExp());
+
+*)
+function GetXp() : integer
+const
+COL_DIGIT : integer := 14474460;
+
+var
+x   : integer; // Where to start searching
+y   : integer; // The y value that the base of the '1' goes through.
+               // It is used as the reference point for all digits.
+xEnd : integer; // The right most x coordinates to search for digits
+s   : string := ''; // String for holding the found digits
+c : integer; // For storing the found colour
+
+begin
+
+  (* Digit Coordinates
+
+  x is the left, bottom matching colour of the digit.
+
+  == 0 ==
+  (x, y)
+  (x - 1, y - 2)
+  x := x + 5
+
+  == 1 ==
+  (x, y)
+  (x + 2, y)
+  x := x + 5
+
+  == 2 ==
+  (x, y)
+  (x, y - 1)
+  x := x + 6
+
+  == 3 ==
+  (x, y)
+  (x + 1, y - 4)
+  x := x + 5
+
+  == 4 ==
+  (x, y - 2)
+  (x + 1, y - 2)
+  x := x + 6
+
+  == 5 ==
+  (x, y)
+  (x - 1, y - 5)
+  x := x + 5
+
+  == 6 ==
+  (x, y)
+  (x + 2, y - 1)
+  (x, y - 4)
+  x := x + 4
+
+  == 7 ==
+  (x, y - 1)
+  (x + 3, y - 7)
+  x := x + 4
+
+  == 8 ==
+  (x, y)
+  (x, y - 4)
+  x := x + 4
+
+  == 9 ==
+  (x, y)
+  (x + 2, y - 3)
+  x := x + 6
+
+  == p ==
+  (x, y)
+  (x - 2, y - 1)
+  (x - 5, y - 4)
+  x := x + 10
+
+  *)
+
+  y := 392;
+  x := 468;
+  xEnd := 548;
+
+  for x to xEnd do
+  begin
+
+    c := GetColor(x, y);
+
+    // (x, y)
+    if c = COL_DIGIT then
+    begin
+
+      // p
+      if GetColor(x - 2, y - 1) = COL_DIGIT then
+      begin
+        print('"p" at ' + toString(x));
+        print('Removing all numbers infront of "xp"');
+        s := '';
+        x := x + 5
+      end
+
+      // 0
+      if GetColor(x - 1, y - 2) = COL_DIGIT then
+      begin
+        print('0 at ' + toString(x));
+        s := s + '0';
+        x := x + 5
+      end
+
+      // 2
+      else if GetColor(x, y - 1) = COL_DIGIT then
+      begin
+        print('2 at ' + toString(x));
+        s := s + '2';
+        x := x + 6
+      end
+
+      // 5
+      else if GetColor(x - 1, y - 5) = COL_DIGIT then
+      begin
+        print('5 at ' + toString(x));
+        s := s + '5';
+        x := x + 5
+      end
+
+      // 6
+      else if GetColor(x + 2, y - 1) AND GetColor(x, y - 4) = COL_DIGIT then
+      begin
+        print('6 at ' + toString(x));
+        s := s + '6';
+        x := x + 4
+      end
+
+      // 8
+      else if GetColor(x, y - 4) = COL_DIGIT then
+      begin
+        print('8 at ' + toString(x));
+        s := s + '8';
+        x := x + 4
+      end
+
+      // 9
+      else if GetColor(x + 2, y - 3) = COL_DIGIT then
+      begin
+        print('9 at ' + toString(x));
+        s := s + '9';
+        x := x + 6
+      end
+
+      // 1
+      else if GetColor(x + 2, y) = COL_DIGIT then
+      begin
+        print('1 at ' + toString(x));
+        s := s + '1';
+        x := x + 5
+      end
+
+      // 3
+      else if GetColor(x + 1, y - 4) = COL_DIGIT then
+      begin
+        print('3 at ' + toString(x));
+        s := s + '3';
+        x := x + 5
+      end
+
+
+
+    end; // End If (x, y) = COL_DIGIT
+
+    // 7
+    if GetColor(x, y - 1) = COL_DIGIT then
+      if GetColor(x + 3, y - 7) = COL_DIGIT then
+      begin
+        print('7 at ' + toString(x));
+        s := s + '7';
+        x := x + 4
+      end;
+
+    // 4
+    if GetColor(x, y - 2) = COL_DIGIT then
+      if GetColor(x + 1, y - 2) = COL_DIGIT then
+      begin
+        print('4 at ' + toString(x));
+        s := s + '4';
+        x := x + 6
+      end;
+
+  end; // End for
+
+
+
+  Try
+    result := StrToInt(s);
+  Except
+    result := -1
+  End;
+
+end;
+
+
+procedure MainLoop()
+var
+timer : TTimeMarker;
+
+begin
+  timer.start();
+
+  print(toStr(GetXp()) + ' ms: ' + toStr(timer.getTime()));
+
+  TRSChatBox.getXP();
+
+  Sleep(1000);
+end;
+
+begin
+  clearDebug();
+  setupSRL();
+
+  while true do
+    MainLoop();
+
+end.
+

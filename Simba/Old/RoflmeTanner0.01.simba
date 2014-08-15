@@ -1,0 +1,430 @@
+program RoflmeTanner;
+
+{$DEFINE SMART}
+{$i SRL/SRL.simba}
+{$i SPS/SPS.simba}
+{$i SRL/SRL/Misc/Debug.simba}
+{$I SRL/SRL/Misc/Online.simba}
+
+
+var
+  Leather, HardLeather, x, y, Loads:Integer;
+
+
+const
+  WhichHide = 'hard'; // 'soft' or 'hard'
+
+
+  Version = 0.01; // Make sure you have the latest version!
+
+
+
+
+
+///////// Declares account for login purposes //////////
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;  // Leave
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+  With Players[0] do
+  begin
+    Name   := ''; // Username
+    Pass   := ''; // Password
+    Pin    := ''; // Pin (if you have one)
+    Active := true;
+  end;
+end;
+///////// Declares account for login purposes //////////
+
+
+
+
+
+
+
+
+
+////////// Antiban ////////
+Procedure AntiBan;
+begin
+  Case Random(8000) of
+    1: RandomRClick;
+    2: RandomMovement;
+    3..10: BoredHuman;
+    11..20: PickUpMouse;
+    21..7999: Wait(50);
+  end;
+  SetAngle(SRL_ANGLE_HIGH);
+  Wait(100+Random(20));
+end;
+////////// Antiban ////////
+
+
+
+
+
+
+
+
+
+//// Sets DTMs ////
+Procedure SetDTMs;
+begin
+  Leather := DTMFromString('mlwAAAHicY2dgYOABYjEglgRiXiBmZIAAIShfBIg5gVgKiEWBmB0qb2XKASSZsGJWIIkLM+LBUAAAk5cBcA==');
+  HardLeather := DTMFromString('mlwAAAHicY2dgYOABYjEglgRiXiBmZIAAIShfBIg5gVgKiEWBmB0qr6EqDSSZsGJWIIkLM+LBUAAAjiwBYQ==');
+end;
+//// Set DTMs ////
+
+
+
+
+
+
+
+
+
+/// Free DTMs ///
+Procedure FreeDTMz;
+begin
+  FreeDTM(Leather);
+  FreeDTM(HardLeather);
+end;
+/// Free DTMs ///
+
+
+
+
+
+
+
+
+
+//////// Color of the tanner ////////////
+function TannerColor: Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.14, 1.34);
+
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, 14071249, MSX1, MSY1, MSX2, MSY2, 19);
+  if (Length(arP) = 0) then
+  begin
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+
+  for i := 0 to arL do
+  begin
+    Result := arC[i];
+    Break;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+    Exit;
+end;
+//////// Color of the tanner ////////////
+
+
+
+
+
+
+
+
+
+/////////////////// Banks ///////////////////
+Procedure Bank;
+var
+  Banking: Integer;
+begin
+  MarkTime(Banking);
+  repeat
+    OpenBankFast('vwb');
+    Wait(80+random(10));
+  until BankScreen or PinScreen or (TimeFromMark(Banking) > 10000)
+
+  if TimeFromMark(Banking) > 10000 then
+    Bank;
+
+  if PinScreen then
+  begin
+    repeat
+      InPin(Players[0].Pin);
+    until BankScreen
+  end;
+
+  if BankScreen then
+  begin
+    DepositAll;
+    Withdraw(0, 0, 28);
+  end;
+
+end;
+/////////////////// Banks ///////////////////
+
+
+
+
+
+
+
+
+
+//////////////// Walks to tanner ////////////
+Procedure WalkToTanner;
+var
+  myPath: TPointArray;
+begin
+  myPath := [Point(4576, 2929), Point(4566, 2971),
+    Point(4565, 3025), Point(4584, 3029)];
+
+  SPS_WalkPath(myPath);
+
+  repeat
+    Wait(80+random(10));
+    Antiban;
+  until not IsMoving;
+end;
+//////////////// Walks to tanner ////////////
+
+
+
+
+
+
+
+
+///////////// Finds tanner //////////////
+Function FindTanner: Boolean;
+var
+  CTS, I, H: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.14, 1.34);
+  For H := 0 to 1 do
+    if not FindColorsSpiralTolerance(MSCX, MSCY, TPA, TannerColor, MSX1, MSY1, MSX2, MSY2, 0) then
+      Exit;
+    ColorToleranceSpeed(CTS);
+    ATPA := TPAToATPAEx(TPA, 2, 2);
+    For I := 0 to High(ATPA) do
+    begin
+      MiddleTPAEx(ATPA[i], x, y);
+      MMouse(x, y, 0, 0);
+      Wait(50+random(10));
+      If IsUpText('alk') then
+      begin
+        Result := True
+        Writeln('Found Tanner');
+        ClickMouse2(false);
+        WaitOptionMulti(['Trade', 'rade', 'anner'], 1000);
+        repeat
+          Wait(20+random(5));
+        until not IsMoving;
+        Break;
+      end;
+    end;
+end;
+///////////// Finds tanner //////////////
+
+
+
+
+
+
+
+
+/////// Searches for hide text at tanner ///////
+Function FindOption: Boolean;
+begin
+  Case WhichHide of
+
+  'soft':
+    Result := FindText(x, y, 'Sof', StatChars, MCX1, MCY1, MCX2, MCY2);
+
+  'hard':
+    Result := FindText(x, y, '3', StatChars, MCX1, MCY1, MCX2, MCY2);
+   end;
+
+  if Result then
+    Writeln('Found tan option');
+
+end;
+/////// Searches for hide text at tanner ///////
+
+
+
+
+
+
+
+
+
+
+//// Checks invo to see if you have hides ////
+Function HidesTanned: Boolean;
+begin
+  Case WhichHide of
+
+  'soft':
+    Result := FindDTM(Leather, x, y, MIX1, MIY1, MIX2, MIY2);
+
+  'hard':
+    Result := FindDTM(HardLeather, x, y, MIX1, MIY1, MIX2, MIY2);
+
+  end;
+
+  if Result then
+    Writeln('Leather in inventory, banking');
+
+end;
+//// Checks invo to see if you have hides ////
+
+
+
+
+
+
+
+
+///// Tans hides /////
+Procedure TanHides;
+begin
+
+  repeat
+    Wait(50+random(5));
+  until not IsMoving
+
+  repeat
+      if FindOption then
+        Mouse(x, y, 3, 3, mouse_left);
+
+      Wait(1000+random(100));
+
+      if HidesTanned then
+      begin
+        Inc(Loads);
+        Exit;
+      end;
+
+      if not FindOption then
+      begin
+        if FindText(x, y, 'make', SmallChars, MCX1, MCY1, MCX2, MCY2) then
+        begin
+          MMouse(17, 430, 2, 20);
+          Wait(300+random(10));
+        end;
+
+      if HidesTanned then
+      begin
+        Inc(Loads);
+        Exit;
+      end;
+
+        if not FindText(x, y, 'make', SmallChars, MCX1, MCY1, MCX2, MCY2) then
+        begin
+          FindTanner;
+        end;
+      end;
+  until HidesTanned;
+
+  if HidesTanned then
+    Inc(Loads);
+end;
+///// Tans hides /////
+
+
+
+
+
+
+
+
+///////// Walks to bank /////////
+Procedure WalkToBank;
+var
+  myPath: TPointArray;
+begin
+  myPath := [Point(4564, 3018),
+    Point(4563, 2979), Point(4571, 2938),
+    Point(4579, 2893)];
+
+  SPS_WalkPath(myPath);
+
+
+  repeat
+    Wait(80+random(10));
+    Antiban;
+  until not IsMoving;
+end;
+///////// Walks to bank ////////
+
+
+
+
+
+
+
+///// Progress Report /////
+Procedure Report;
+var
+  Profit, ProfitHr, TimeRan, Amount, AmountHr: Integer;
+begin
+  ClearDebug;
+
+  Case WhichHide of
+  'soft':
+    Profit := (((GetGEPrice(1741)) - (GetGEPrice(1739))) * (28 * (Loads)));
+  'hard':
+    Profit := (((GEtGEPrice(1743)) - (GetGEPrice(1739))) * (28 * (Loads)));
+  end;
+
+  TimeRan := (GetTimeRunning / 1000);
+  Amount := (28 * (Loads));
+  AmountHr := (3600 * (Amount)) / (TimeRan);
+  ProfitHr := (3600 * (Profit)) / (TimeRan);
+
+  Writeln('Profit made: ' + IntToStr(Profit));
+  Writeln('Thats ' + IntToStr(ProfitHr) + ' per hour')
+  Writeln('Have tanned ' + IntToStr(Amount) + ' hides, around ' + IntToStr(AmountHr) + ' per hour');
+  Writeln('Script has been running for ' +  TimeRunning);
+end;
+
+
+begin
+  Cleardebug;
+  DeclarePlayers;
+  SRL_SixHourFix := True;
+  Smart_FixSpeed := True;
+  SetupSRL;
+  SmartSetRefresh(40);
+  LoginPlayer;
+  SetAngle(SRL_ANGLE_HIGH);
+  SPS_Setup(RUNESCAPE_SURFACE, ['11_7']);
+  SetDTMs;
+  repeat
+    Bank;
+    WalkToTanner;
+    FindTanner;
+    TanHides;
+    WalkToBank;
+    Report;
+  until(false);
+  FreeDTMz;
+end.

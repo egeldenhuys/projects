@@ -1,0 +1,1044 @@
+program CaotomsTanner;
+
+  {$define SMART}
+  {$i srl/srl.simba}
+  {$i sps/sps.simba}
+  {$I SRL/SRL/Misc/SmartGraphics.Simba}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///                                                                                                                ///
+///                                         Welcome To Caotom's Auto Tanner                                        ///
+///                                                                                                                ///
+///   To run this script successfully you must begin inside the AK bank or at the tanner or on the path between    ///
+///                                  And have your d-hides in your visible bank tab                                ///
+///                                                                                                                ///
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+const
+
+Hide = 'Green';              //The Type of the Hide:         Purple  (Royal)
+                             //                              Black
+                             //                              Red
+                             //                              Blue
+                             //                              Green
+                             //                              Cow  =  Hard Leather
+HideFinder          = True;      // True for bitmaps, false for simple colour, I recommend using bitmaps (true) it is far better.
+Rest                = True;      // True if you want to rest back to ful energy, false if you want to just keep going and walking until full energy.
+
+        // Adjust the following if you are having problems \\
+
+EllisColour         = 1646624;   // I find his hair is the most reliable colour.
+PurpleHide          = 11023225;  // Purple hide colour (use the colour of the small arrow-like patterns so that it does not get the leathers.
+BlackHide           = 1842205;   // Black hide colour, same as above, Black generally doesn't work
+RedHide             = 659534;    // Red hide colour, same as above, Red generally needs leathers in a different tab
+BlueHide            = 9316116;   // Blue hide colour, same as above
+GreenHide           = 805642;    // Green hide colour, same as above, Green generally needs leathers in a different tab
+
+
+// If you are having issues with locating the hides in the bank change the bitmaps below.
+
+var
+x, y, failsafe, HidesDone, Start, PurpleColour, Fail: Integer;
+Purple, Black, Red, Blue, Green, PurpleI, BlackI, RedI, BlueI, GreenI, CowHide: LongInt;
+PathThere, PathBack: TPointArray;
+
+procedure DeclarePlayers;
+  begin
+    HowManyPlayers := 1;
+    NumberOfPlayers(HowManyPlayers);
+    CurrentPlayer := 0;
+    with Players[0] do
+    begin
+      Name        := '';                     //Username Here
+      Pass        := '';                     //Password Here
+      Pin         := '';                     //Bank Pin Here
+      BoxRewards  := ['XP','xp','lamp'];
+      Active      := True;
+    end;
+  end;
+
+procedure StartSetup(SmartWorld: Integer; ClDebug, Login: Boolean);
+begin
+  {$IFDEF SMART}
+    {$IFDEF SIMBAMAJOR980}
+      Smart_Server := 72;
+      Smart_Members := True;
+      Smart_Signed := True;
+      Smart_SuperDetail := False;
+    {$ELSE}
+      SRL_SixHourFix := True;
+      Smart_FixSpeed := True;
+    {$ENDIF}
+  {$ENDIF}
+
+  SetupSRL;
+  DeclarePlayers;
+  if ClDebug = True then
+    ClearDebug;
+  if Login = True then
+    if not LoggedIn then LogInPlayer;
+end;
+
+procedure LoadVars;
+begin
+  Purple := BitmapFromString(10, 10, 'meJxba1obK+McLeMERIsNyyKlHc' +   // These are the bitmaps for inside the bank edit if you get the error, cannot locate hides in banking.
+        'Kl7OEIKAVBS43KIQiuYK1pbbysK5AEomXGFRAElIUoQJZdYVwJQUA' +
+        'rgFygAog4sizQCiAbqABiAkQ7EK0yqYabA3EnUBYiBUcEZSFewCoL' +
+        'RETKAhEAmTxc3w==');
+  PurpleColour := 10826359
+  Black := BitmapFromString(11, 11, 'meJyNkAEKwCAMAz+i1Ac5nIL//4' +
+        'qBQCjthMEhxRwSa9bm3GatlOrBpQakWfCmhP68txQgJT6lwOGnMMZ' +
+        'SQ50EEaD/WUNp+LVKEgr+hSyEnQQhb+wATlVAyQ==');
+  Red := BitmapFromString(11, 12, 'meJyVj00KgCAUBqVN8TL0OBFIax' +
+        'G8/3F6v5HlwmBwM8OnQqwQ6+ITc8zrjucTaAMI+RuYTWiFxm4nIjs' +
+        'QykBA2LIGai2gu9gqHOgOWuvlzRK8GAnuX3cD4k8wOSf0Amou+5kr' +
+        '3A==');
+  Blue := BitmapFromString(10, 10, 'meJybrCkyWVPEm4fLkxuEutSE3b' +
+        'k54QgiBUFAKQiCy/rxcAHRZLAJPerCEIRVtk8dioBWALlAEi4Fl/X' +
+        'mgUrBZSEmTNAQgSuGuBMijowIykK8gFXWD+ZBgrIAEogy6Q==');
+  Green := BitmapFromString(10, 10, 'meJzjtOXgBCNuTy4I4rTigCAePy' +
+        '4uexAJQt4EZCEKIOIQEoHAskArIFLI2kEmwKSQZSFScASVtcUpC/E' +
+        'CVlkgIl6WiYEBiHApAADPDiBX');
+  PurpleI := BitmapFromString(10, 10, 'meJxbZlyxyqQaiCKlHYAoXMoeiE' +   // These are the bitmaps for the hides inside you inv. Edit these if you get the issue where is just repeatadly banks.
+        'IlbSEoWsYJIgtkQBQsMCiGK4iVcYZIQdBCwxIIgigAykIQxITFhmU' +
+        'QBLECTXapUTkEAa0AcpGl4LIQxwAVwGUhjGXGFXDFQDVwk5ERQVmI' +
+        'F7DKAhFEFgDnAVyG');
+  BlackI := BitmapFromString(11, 11, 'meJyFjwEKwCAMA7/hQNH3iM6x/z' +
+        '/GYCCEwhgcUpqz1TGfcci5OOys9SpFndIVNAo4QYiC5kLvt6e1tpA' +
+        'SFwjnYOOv4M+WwFSC75XAQik7vsLxf30JvA42Pe9CjA==');
+  RedI := BitmapFromString(12, 11, 'meJzj4vfm4vfm4LECInZuC3YuUx' +
+        'CJirhQ1XDyueNQYAtGVkAFEIRVAYTNxe9JjBoIApoJcQCQBKpEUuA' +
+        'NU2CL4guYGphpnnAtEBdClMEcjEBoasAIixq4T3GpQUIkqAEA64Ur' +
+        'hw==');
+  BlueI := BitmapFromString(12, 11, 'meJyF0EEKgCAQhWFpl7ZzukLaSS' +
+        'KCOVhEhNB9G3o0mFHBv1D6UKcUae9baXRWG1ydNzUWRhYAc+cLxqc' +
+        'RgJbgkTL5KgbhtDUQ0kufZouEBMg2NwBq8Eg9Sg0WKRLfp1BTVEz6' +
+        'ZjDmh+HrV8BUxvyaA/DgQYM=');
+  GreenI := BitmapFromString(12, 11, 'meJyNj0EKgDAMBEtPae2LAsVzEf' +
+        'z/c9w0oWrUIswhhCHZLVsuYBcS0ysQUiVzqi2XdvPzKpjQgaA4Z5j' +
+        'gvyMZmDSkE4TeQkO6O9jYcG3x+DVwTSeONf12TphiCGDuHMcdKpg=');
+
+        // This is the DTM for Cowhide
+  CowHide := DTMFromString('mwQAAAHic42RgYJjPysCwDIjXAvFqIF4MxNOAeCIQrwLiyUDswcTAYA3ELkDsC8ShQBwIxG5AbAvEzkC8bP58oGlMeLEkkOQigBmJwHAAAFXlCtM=');
+
+
+
+
+  SPS_Setup(Runescape_Other, ['Al_Kharid']);
+  PathThere := [Point(221, 216), Point(237, 214), Point(245, 199), Point(250, 178), Point(253, 159), Point(265, 151), Point(267, 133), Point(265, 121), Point(256, 119), Point(245, 119), Point(235, 119)];
+  PathBack := [Point(240, 121), Point(258, 121), Point(266, 135), Point(264, 154), Point(248, 170), Point(247, 198), Point(239, 219), Point(218, 217)];
+end;
+
+procedure FreeVars;
+begin
+  FreeBitmap(Purple);
+  FreeBitmap(Black);
+  FreeBitmap(Red);
+  FreeBitmap(Blue);
+  FreeBitmap(Green);
+  FreeBitmap(PurpleI);
+  FreeBitmap(BlackI);
+  FreeBitmap(RedI);
+  FreeBitmap(BlueI);
+  FreeBitmap(GreenI);
+end;
+
+procedure Terminate(Reason: String);
+begin
+ // Logout;
+  Writeln('Script Shutting Down due to ' + Reason + '.');
+  TerminateScript;
+end;
+
+
+procedure AntiRandom;
+begin
+  if not FindNormalRandoms then
+    if not LoggedIn then
+      Terminate('Failing a random event');
+end;
+
+
+function Antiban(Skill: String): Boolean;
+begin
+  if(not(LoggedIn))then
+  Exit;
+  AntiRandom;
+  Case Random(5000) Of
+    0:
+      begin
+        Writeln('Antiban');
+        GameTab(tab_Stats) HoverSkill(Skill, False);
+        Wait(400 + Random(450));
+        GameTab(tab_Inv);
+        Result := True;
+      end;
+    1:
+      begin
+        Writeln('Antiban');
+        GameTab(tab_Inv);
+        ExamineInv;
+        Result := True;
+      end;
+    2:
+      begin
+        Writeln('Antiban');
+        SleepAndMoveMouse(3500 + Random(600));
+        MakeCompass('n');
+        SetAngle(0);
+        Result := True;
+      end;
+    3:
+      begin
+        Writeln('Antiban');
+        GameTab(Tab_Stats);
+        Wait(3000 + Random(1500));
+        GameTab(tab_Inv);
+        Result := True;
+      end;
+    4:
+      begin
+        Writeln('Antiban');
+        HoverSkill('random', False);
+        Wait(1000 + Random(500));
+        GameTab(tab_Inv);
+        Result := True;
+      end;
+    5:
+      begin
+        Writeln('Antiban');
+        PickUpMouse;
+        MakeCompass('n');
+        SetAngle(0);
+        Result := True;
+      end;
+    6:
+      begin
+        Writeln('Antiban');
+        BoredHuman;
+        MakeCompass('n');
+        SetAngle(0);
+        Result := True;
+      end;
+    end;
+end;
+
+procedure TPAFinderMM(Hue, Sat: Extended; Colour, Tolerance: Integer);
+
+var
+  CTS, I, x, y: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue,Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MMX1, MMY1, MMX2, MMY2, Tolerance);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, 15, 15);
+
+  begin
+    MiddleTPAEx(ATPA[i], x, y);
+    Mouse(x, y, 5, 5, True);
+  end;
+end;
+
+function TPAFinder(Hue, Sat: Extended; Colour, Tolerance, ClickType: Integer; UpText, Options: Array of String): Boolean;
+
+var
+  CTS, I, x, y: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue,Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MSX1, MSY1, MSX2, MSY2, Tolerance);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, 15, 15);
+
+  For I := 0 to High(ATPA) do
+  begin
+    MiddleTPAEx(ATPA[i], x, y);
+    MMouse(x, y, 5, 5);
+    if WaitUpTextMulti(UpText, 450) then
+    begin
+      ClickMouse2(ClickType);
+      ChooseOptionMulti(Options);
+      Result := True;
+      Exit;
+    end else
+      Result := False;
+  end;
+end;
+
+
+function TPAFinderNoUp(Hue, Sat: Extended; Colour, Tolerance, ClickType: Integer; Options: Array of String): Boolean;
+
+var
+  CTS, I, x, y: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue,Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MSX1, MSY1, MSX2, MSY2, Tolerance);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, 15, 15);
+
+  For I := 0 to High(ATPA) do
+  begin
+    MiddleTPAEx(ATPA[i], x, y);
+    MMouse(x, y, 5, 5);
+    Result := True;
+    Exit;
+  end;
+end;
+
+function TPAFinderMC(Hue, Sat: Extended; Colour, Tolerance: Integer): Boolean;
+
+var
+  CTS, I, x, y: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue,Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MCX1, MCY1, MCX2, MCY2, Tolerance);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, 15, 15);
+
+  For I := 0 to High(ATPA) do
+  begin
+    MiddleTPAEx(ATPA[i], x, y);
+    Mouse(x, y, 5, 5, True);
+    Result := True;
+    Exit;
+  end;
+end;
+
+function TPASpotterMC(Hue, Sat: Extended; Colour, Tolerance: Integer): Boolean;
+
+var
+  CTS: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue,Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MCX1, MCY1, MCX2, MCY2, Tolerance);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, 15, 15);
+  if FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MCX1, MCY1, MCX2, MCY2, Tolerance) then
+    Result := True
+  else
+    Result := False;
+end;
+
+function TPASpotterMM(Hue, Sat: Extended; Colour, Tolerance: Integer): Boolean;
+
+var
+  CTS: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue,Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MMX1, MMY1, MMX2, MMY2, Tolerance);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, 15, 15);
+  if FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MMX1, MMY1, MMX2, MMY2, Tolerance) then
+    Result := True
+  else
+    Result := False;
+end;
+
+function TPASpotter(Hue, Sat: Extended; Colour, Tolerance: Integer): Boolean;
+
+var
+  CTS: Integer;
+  TPA: TPointArray;
+  ATPA: Array of TPointArray;
+
+begin
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Hue,Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MSX1, MSY1, MSX2, MSY2, Tolerance);
+  ColorToleranceSpeed(CTS);
+  if (Length(TPA) < 1) then
+    Exit;
+  ATPA := TPAToATPAEx(TPA, 15, 15);
+  if FindColorsSpiralTolerance(MSCX, MSCY, TPA, Colour, MSX1, MSY1, MSX2, MSY2, Tolerance) then
+    Result := True
+  else
+    Result := False;
+end;
+
+procedure OpenBanking;
+begin
+  FailSafe := 0;
+  if OpenBankNPC or TPAFinder(0.93, 0.19, 7697786, 3, 0, ['ank', 'anker'], ['ank B']) then
+  begin
+    MarkTime(FailSafe);
+    repeat
+      Wait(10);
+      AntiBan('Random');
+    Until(BankScreen) or (PinScreen) or (TimeFromMark(FailSafe) >= 9500);
+    if PinScreen then
+      if (Players[CurrentPlayer].Pin <> '') then
+        InPin(Players[CurrentPlayer].Pin)
+      else
+        Terminate('No Pin Given');
+    if TimeFromMark(FailSafe) >= 9500 then
+    begin
+      if (OpenBankNPC) then
+      begin
+        MarkTime(FailSafe);
+        repeat
+          Wait(10);
+          AntiBan('Random');
+        Until(BankScreen) or (PinScreen) or (TimeFromMark(FailSafe) >= 9500);
+        if PinScreen then
+          if (Players[CurrentPlayer].Pin <> '') then
+            InPin(Players[CurrentPlayer].Pin)
+          else
+            Terminate('No Pin Given');
+      end else
+        Terminate('Failed To open the bank');
+    end;
+  end else
+  begin
+    FindSymbol(x, y, 'Bank');
+    Mouse(x, y, 5, 5, True);
+    FFlag(6);
+    while IsMoving do
+    begin
+      Wait(100);
+      AntiBan('random');
+    end;
+    if (OpenBankNPC) or TPAFinder(0.01, 0.05, 6645354, 3, 0, ['ank', 'anker'], ['ank B']) then
+    begin
+      MarkTime(FailSafe);
+      repeat
+        Wait(10);
+        AntiBan('Random');
+      Until(BankScreen) or (PinScreen) or (TimeFromMark(FailSafe) >= 9500);
+      if PinScreen then
+        if (Players[CurrentPlayer].Pin <> '') then
+          InPin(Players[CurrentPlayer].Pin)
+        else
+          Terminate('No Pin Given');
+    end else
+      Terminate('Failed To open the bank');
+  end;
+end;
+
+procedure HandleBank;
+
+var
+  t: Integer;
+  aFound: Extended;
+begin
+  T := 0;
+  if InvCount >= 1 then
+    DepositAll;
+  wait(500);
+  if HideFinder then
+  begin
+    if Hide = 'Purple' then
+    begin
+      if FindBitmapToleranceIn(Purple, x, y, MSX1, MSY1, MSX2, MSY2, 25) or TPAFinderNoUp(0.02, 0.22, PurpleColour, 2, 0, ['All', 'll'])then
+      begin
+        Mouse(x, y, 5, 5, False);
+        WaitOption('All', 1000);
+        MarkTime(T);
+        repeat
+          wait(10);
+        until(InvFull) or (TimeFromMark(t) >= 5000);
+        if not InvFull then
+          Terminate('Not Enough hides left to make a full Inv');
+      end else
+        Terminate('Could not find hides in bank');
+    end;
+    if Hide = 'Black' then
+    begin
+      if FindBitmapToleranceIn(Black, x, y, 25, 85, 480, 290, 25) then
+      begin
+        Mouse(x, y, 5, 5, False);
+        WaitOption('All', 1000);
+        MarkTime(T);
+        repeat
+          wait(10);
+        until(InvFull) or (TimeFromMark(t) >= 5000);
+        if not InvFull then
+          Terminate('Not Enough hides left to make a full Inv');
+      end else
+        Terminate('Could not find hides in bank');
+    end;
+    if Hide = 'Red' then
+    begin
+      if FindBitmapToleranceIn(Red, x, y, MSX1, MSY1, MSX2, MSY2, 25) then
+      begin
+        Mouse(x, y, 5, 5, False);
+        WaitOption('All', 1000);
+        MarkTime(T);
+        repeat
+          wait(10);
+        until(InvFull) or (TimeFromMark(t) >= 5000);
+        if not InvFull then
+          Terminate('Not Enough hides left to make a full Inv');
+      end else
+        Terminate('Could not find hides in bank');
+    end;
+    if Hide = 'Blue' then
+    begin
+      if FindBitmapToleranceIn(Blue, x, y, MSX1, MSY1, MSX2, MSY2, 25) then
+      begin
+        Mouse(x, y, 5, 5, False);
+        WaitOption('All', 1000);
+        MarkTime(T);
+        repeat
+          wait(10);
+        until(InvFull) or (TimeFromMark(t) >= 5000);
+        if not InvFull then
+          Terminate('Not Enough hides left to make a full Inv');
+      end else
+        Terminate('Could not find hides in bank');
+    end;
+    if Hide = 'Green' then
+    begin
+      if FindBitmapToleranceIn(Green, x, y, MSX1, MSY1, MSX2, MSY2, 25) then
+      begin
+        Mouse(x, y, 5, 5, False);
+        WaitOption('All', 1000);
+        MarkTime(T);
+        repeat
+          wait(10);
+        until(InvFull) or (TimeFromMark(t) >= 5000);
+        if not InvFull then
+          Terminate('Not Enough hides left to make a full Inv');
+      end else
+        Terminate('Could not find hides in bank');
+    end;
+  end else
+  begin
+    if Hide = 'Purple' then
+    begin
+      if FindColorSpiralTolerance(x, y, PurpleHide, 25, 85, 475, 290, 15) then
+      begin
+        MissMouse(x, y);
+        Wait(RandomRange(200,300));
+        if IsUpTextMultiCustom([' ']) then
+        begin
+          ClickMouse2(0);
+          WaitOption('All', 10000);
+          MarkTime(T);
+          repeat
+            wait(10);
+          until(InvFull) or (TimeFromMark(t) >= 5000);
+          if not InvFull then
+            Terminate('Not Enough hides left to make a full Inv');
+        end else
+          Terminate('Failure with hide uptext, try removing the blue writing and commers (leave just two apostrophies and a space between them in between the square brackets) in the relevant section between lines 520-587 if the mouse is just hovering over the hide. If it is hovering over the draongleather then try moving the leather to a different tab. If it is on a differnt item, try using the bitmap detection (if it doesnt work then adjust it as shown on the thread).');
+      end else
+        Terminate('cannot find the hide colour specified, try adjusting it');
+    end;
+    if Hide = 'Black' then
+    begin
+      if FindColorSpiralTolerance(x, y, BlackHide, 25, 85, 475, 290, 15) then
+      begin
+        MissMouse(x, y);
+        Wait(RandomRange(200,300));
+        if IsUpTextMultiCustom(['ide', 'hide', 'de', 'onhi', 'nhi', 'nh', 'hi', 'id']) then
+        begin
+          ClickMouse2(0);
+          WaitOption('All', 10000);
+          MarkTime(T);
+          repeat
+            wait(10);
+          until(InvFull) or (TimeFromMark(t) >= 5000);
+          if not InvFull then
+            Terminate('Not Enough hides left to make a full Inv');
+        end else
+          Terminate('Failure with hide uptext, try removing the blue writing and commers (leave just two apostrophies and a space between them in between the square brackets) in the relevant section between lines 520-587 if the mouse is just hovering over the hide. If it is hovering over the draongleather then try moving the leather to a different tab. If it is on a differnt item, try using the bitmap detection (if it doesnt work then adjust it as shown on the thread).');
+      end else
+        Terminate('cannot find the hide colour specified, try adjusting it');
+    end;
+    if Hide = 'Red' then
+    begin
+      if FindColorSpiralTolerance(x, y, RedHide, 25, 85, 475, 290, 15) then
+      begin
+        MissMouse(x, y);
+        Wait(RandomRange(200,300));
+        if IsUpTextMultiCustom(['ide', 'hide', 'de', 'onhi', 'nhi', 'nh', 'hi', 'id']) then
+        begin
+          ClickMouse2(0);
+          WaitOption('All', 10000);
+          MarkTime(T);
+          repeat
+            wait(10);
+          until(InvFull) or (TimeFromMark(t) >= 5000);
+          if not InvFull then
+            Terminate('Not Enough hides left to make a full Inv');
+        end else
+          Terminate('Failure with hide uptext, try removing the blue writing and commers (leave just two apostrophies in and a space between them between the square brackets) in the relevant section between lines 520-587 if the mouse is just hovering over the hide. If it is hovering over the draongleather then try moving the leather to a different tab. If it is on a differnt item, try using the bitmap detection (if it doesnt work then adjust it as shown on the thread).');
+      end else
+        Terminate('cannot find the hide colour specified, try adjusting it');
+    end;
+    if Hide = 'Blue' then
+    begin
+      if FindColorSpiralTolerance(x, y, BlueHide, 25, 85, 475, 290, 15) then
+      begin
+        MissMouse(x, y);
+        Wait(RandomRange(200,300));
+        if IsUpTextMultiCustom(['ide', 'hide', 'de', 'onhi', 'nhi', 'nh', 'hi', 'id']) then
+        begin
+          ClickMouse2(0);
+          WaitOption('All', 10000);
+          MarkTime(T);
+          repeat
+            wait(10);
+          until(InvFull) or (TimeFromMark(t) >= 5000);
+          if not InvFull then
+            Terminate('Not Enough hides left to make a full Inv');
+        end else
+          Terminate('Failure with hide uptext, try removing the blue writing and commers (leave just two apostrophies in and a space between them between the square brackets) in the relevant section between lines 520-587 if the mouse is just hovering over the hide. If it is hovering over the draongleather then try moving the leather to a different tab. If it is on a differnt item, try using the bitmap detection (if it doesnt work then adjust it as shown on the thread).');
+      end else
+        Terminate('cannot find the hide colour specified, try adjusting it');
+    end;
+    if Hide = 'Green' then
+    begin
+      if FindColorSpiralTolerance(x, y, GreenHide, 25, 85, 475, 290, 15) then
+      begin
+        MissMouse(x, y);
+        Wait(RandomRange(200,300));
+        if IsUpTextMultiCustom(['ide', 'hide', 'de', 'onhi', 'nhi', 'nh', 'hi', 'id']) then
+        begin
+          ClickMouse2(0);
+          WaitOption('All', 10000);
+          MarkTime(T);
+          repeat
+            wait(10);
+          until(InvFull) or (TimeFromMark(t) >= 5000);
+          if not InvFull then
+            Terminate('Not Enough hides left to make a full Inv');
+        end else
+          Terminate('Failure with hide uptext, try removing the blue writing and commers (leave just two apostrophies in and a space between them between the square brackets) in the relevant section between lines 520-587 if the mouse is just hovering over the hide. If it is hovering over the draongleather then try moving the leather to a different tab. If it is on a differnt item, try using the bitmap detection (if it doesnt work then adjust it as shown on the thread).');
+      end else
+        Terminate('cannot find the hide colour specified, try adjusting it');
+    end;
+  end;
+  if Hide = 'Cow' then
+  begin
+    if FindDTMRotated(CowHide, x, y, MSX1, MSY1, MSX2, MSY2, -Pi/4, Pi/4, Pi/60, aFound) then
+    begin
+      MissMouse(x, y);
+      Wait(RandomRange(200,300));
+      ClickMouse2(0);
+      WaitOption('All', 10000);
+      MarkTime(T);
+      repeat
+        wait(10);
+      until(InvFull) or (TimeFromMark(t) >= 5000);
+      if not InvFull then
+        Terminate('Not Enough hides left to make a full Inv');
+    end else
+      Terminate('cannot find the hide colour specified, try adjusting it');
+  end;
+end;
+
+
+function Banking: Boolean;
+var
+t: Integer;
+begin
+  if not LoggedIn then Exit;
+  if Start >= 1 then
+  begin
+    Result := True;
+    Start := 0;
+    Exit;
+  end;
+  Start := 0;
+  Writeln('Banking...');
+  if not BankScreen then OpenBanking;
+  HandleBank;
+  MarkTime(t);
+  repeat
+    wait(10);
+  until(InvFull) or (TimeFromMark(t) >= 5000);
+  if InvFull then
+  begin
+    Result := True;
+    Fail := 0;
+  end;
+end;
+
+function WalkingToTanner: Boolean;
+begin
+  if not LoggedIn then Exit;
+  SPS_WalkPath(PathThere);
+  while IsMoving do
+  begin
+    Wait(100);
+    AntiBan('random');
+  end;
+end;
+
+function InvHides: Integer;
+var
+  aFound: Extended;
+  TPA: TPointArray;
+begin
+  if HideFinder then
+  begin
+    if Hide = 'Purple' then
+    begin
+      if FindBitmapToleranceIn(PurpleI, x, y, MIX1, MIY1, MIX2, MIY2, 35) then
+        Result := CountItems('Bitmap', PurpleI, [10])
+      else
+      begin
+        If TPAFinderNoUp(0.02, 0.22, PurpleColour, 2, 0, ['All', 'll']) then
+          Result := CountItems('color', PurpleColour, [10]);
+      end;
+    end;
+    if Hide = 'Black' then
+    begin
+      if FindBitmapToleranceIn(BlackI, x, y, MIX1, MIY1, MIX2, MIY2, 35) then
+        Result := CountItems('Bitmap', BlackI, [10]);
+    end;
+    if Hide = 'Red' then
+    begin
+      if FindBitmapToleranceIn(RedI, x, y, MIX1, MIY1, MIX2, MIY2, 35) then
+        Result := CountItems('Bitmap', RedI, [10]);
+    end;
+    if Hide = 'Blue' then
+    begin
+      if FindBitmapToleranceIn(BlueI, x, y, MIX1, MIY1, MIX2, MIY2, 35) then
+        Result := CountItems('Bitmap', BlueI, [10]);
+    end;
+    if Hide = 'Green' then
+    begin
+      if FindBitmapToleranceIn(GreenI, x, y, MIX1, MIY1, MIX2, MIY2, 35) then
+        Result := CountItems('Bitmap', GreenI, [10]);
+    end;
+    if Hide = 'Cow' then
+    begin
+      if FindDTMRotated(CowHide, x, y, MIX1, MIY1, MIX2, MIY2, -Pi/4, Pi/4, Pi/60, aFound) then
+        Result := CountItems('Dtm', CowHide, []);
+    end;
+  end;
+end;
+
+function InvHidesEmpty: Boolean;
+begin
+  if InvHides = 28 then
+    Result := False;
+end;
+
+function ClickTanner: Boolean;
+begin
+  if not LoggedIn then Exit;
+  AntiBan('random');
+  if TPAFinder(0.4, 0.4, EllisColour, 10, 0, ['llis', 'Ellis'], ['Tan', 'an', 'ides', 'Hides']) then
+    WaitColorGoneIn(9746890, MCX1, MCY1, MCX2, MCY2, 5, 10000)
+  else
+  begin
+    MMouse(260, 165, 4, 6);
+    Wait(200+random(200));
+    if IsUpTextMultiCustom(['llis', 'Ellis']) then
+      ClickMouse2(0);
+      WaitOptionMulti(['Tan', 'an', 'Hides', 'ides'], 1000);
+      WaitColorGoneIn(9746890, MCX1, MCY1, MCX2, MCY2, 5, 10000);
+  end;
+  if FindColorSpiralTolerance(x, y, 2104079, MCX1, MCY1, MCX2, MCY2, 5) then
+    Result := True;
+end;
+
+function Tan: Boolean;
+begin
+  if not ClickTanner then
+  begin
+    Fail := Fail + 1;
+    Exit;
+  end;
+  Wait(RandomRange(300,400));
+  Case Hide of
+
+  'Green': begin
+            Failsafe := 0;
+            Wait(RandomRange(200,400));
+            if not TPASpotterMC(0.17, 0.94, 670728, 2) then
+            begin
+              FindColorSpiralTolerance(x, y, 2849730, 490, 390, 510, 470, 5);
+              MMouse(x, y, 1, 1);
+              MarkTime(Failsafe);
+              repeat
+                wait(10);
+                FindNormalRandoms;
+                if TimeFromMark(Failsafe) >= 10000 then
+                  Terminate('Failed To Tan');
+              until TPASpotterMC(0.17, 0.94, 670728, 2);
+            end;
+            TPAFinderMC(0.17, 0.94, 670728, 2);
+              if PinScreen then
+                if (Players[CurrentPlayer].Pin <> '') then
+                  InPin(Players[CurrentPlayer].Pin)
+                else
+                  Terminate('No Pin Given');
+           end;
+
+  'Blue': begin
+            Failsafe := 0;
+            Wait(RandomRange(200,400));
+            if not TPASpotterMC(0.14, 1.01, 4918282, 2) then
+            begin
+              FindColorSpiralTolerance(x, y, 2849730, 490, 390, 510, 470, 5);
+              MMouse(x, y, 1, 1);
+              MarkTime(Failsafe);
+              repeat
+                wait(10);
+                FindNormalRandoms;
+                if TimeFromMark(Failsafe) >= 10000 then
+                  Terminate('Failed To Tan');
+              until TPASpotterMC(0.14, 1.01, 4918282, 2);
+            end;
+            TPAFinderMC(0.14, 1.01, 4918282, 2);
+            if PinScreen then
+                if (Players[CurrentPlayer].Pin <> '') then
+                  InPin(Players[CurrentPlayer].Pin)
+                else
+                  Terminate('No Pin Given');
+           end;
+
+  'Red': begin
+            Failsafe := 0;
+            Wait(RandomRange(200,400));
+            if not TPASpotterMC(0.14, 0.58, 527418, 2) then
+            begin
+              FindColorSpiralTolerance(x, y, 2849730, 490, 390, 510, 470, 5);
+              MMouse(x, y, 1, 1);
+              MarkTime(Failsafe);
+              repeat
+                wait(10);
+                FindNormalRandoms;
+                if TimeFromMark(Failsafe) >= 10000 then
+                  Terminate('Failed To Tan');
+              until TPASpotterMC(0.14, 0.58, 527418, 2);
+            end;
+            TPAFinderMC(0.14, 0.58, 527418, 2);
+            if PinScreen then
+                if (Players[CurrentPlayer].Pin <> '') then
+                  InPin(Players[CurrentPlayer].Pin)
+                else
+                  Terminate('No Pin Given');
+           end;
+
+  'Black': begin
+            Failsafe := 0;
+            Wait(RandomRange(200,400));
+            if not TPASpotterMC(0.01, 0.67, 1907998, 2) then
+            begin
+              FindColorSpiralTolerance(x, y, 2849730, 490, 390, 510, 470, 5);
+              MMouse(x, y, 1, 1);
+              MarkTime(Failsafe);
+              repeat
+                wait(10);
+                FindNormalRandoms;
+                if TimeFromMark(Failsafe) >= 10000 then
+                  Terminate('Failed To Tan');
+              until TPASpotterMC(0.01, 0.67, 1907998, 2);
+            end;
+            TPAFinderMC(0.01, 0.67, 1907998, 2);
+            if PinScreen then
+                if (Players[CurrentPlayer].Pin <> '') then
+                  InPin(Players[CurrentPlayer].Pin)
+                else
+                  Terminate('No Pin Given');
+           end;
+
+  'Purple': begin
+            Failsafe := 0;
+            Wait(RandomRange(200,400));
+            if not TPASpotterMC(0.06, 0.25, 5971010, 3) then
+            begin
+              FindColorSpiralTolerance(x, y, 2849730, 490, 390, 510, 470, 5);
+              MMouse(x, y, 1, 1);
+              MarkTime(Failsafe);
+              repeat
+                wait(10);
+                FindNormalRandoms;
+                if TimeFromMark(Failsafe) >= 10000 then
+                  Terminate('Failed To Tan');
+              until TPASpotterMC(0.06, 0.25, 5971010, 3);
+            end;
+            TPAFinderMC(0.06, 0.25, 5971010, 3);
+            if PinScreen then
+              if (Players[CurrentPlayer].Pin <> '') then
+                InPin(Players[CurrentPlayer].Pin)
+              else
+                Terminate('No Pin Given');
+            end;
+  'Cow': begin
+            Failsafe := 0;
+            Wait(RandomRange(200,400));
+            if not TPASpotterMC(0.30, 0.34, 1713192, 3) then
+            begin
+              FindColorSpiralTolerance(x, y, 2849730, 490, 390, 510, 470, 5);
+              MMouse(x, y, 1, 1);
+              MarkTime(Failsafe);
+              repeat
+                wait(10);
+                FindNormalRandoms;
+                if TimeFromMark(Failsafe) >= 10000 then
+                  Terminate('Failed To Tan');
+              until TPASpotterMC(0.30, 0.34, 1713192, 3);
+            end;
+            TPAFinderMC(0.30, 0.34, 1713192, 3);
+            if PinScreen then
+              if (Players[CurrentPlayer].Pin <> '') then
+                InPin(Players[CurrentPlayer].Pin)
+              else
+                Terminate('No Pin Given');
+         end;
+
+
+  end;
+  WaitFunc(@InvHidesEmpty, RandomRange(40, 75), 3000);
+  HidesDone := HidesDone + 28;
+end;
+
+function WalkToBank: Boolean;
+begin
+    SPS_WalkPath(PathBack);
+    while IsMoving do
+    begin
+      Wait(100);
+      AntiBan('random');
+    end;
+end;
+
+
+procedure PaintSmart;
+var
+  Line1, Line2, Line3: String;
+  Image: Integer;
+begin
+  Image := BitmapFromString(509, 128, 'meJztwkERAAAMAqDqRjOKUVZj' +
+        'DzjSRVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV' +
+        'VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV' +
+        'VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV' +
+        'VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV' +
+        'VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV1X8Pvm/vpQ==');
+  Line1 := ('You have been Running for a total of ' + TimeRunning + '');
+  Line2 := ('You have managed to Tan ' + IntToStr(HidesDone) + ' Hides');
+  Line3 := ('You are Tanning ' + IntToStr(((HidesDone) * 3600) / (GetTimeRunning / 1000)) + ' Hides per hour!');
+  SMART_DrawBitmap(True, Image, Point(7, 344));
+  SMART_DrawText(20, 360, LoginChars, Line1, clRed);
+  SMART_DrawText(20, 380, LoginChars, Line2, clRed);
+  SMART_DrawText(20, 400, LoginChars, Line3, clRed);
+  FreeBitmap(Image);
+end;
+
+
+procedure Proggy;
+begin
+  ClearDebug;
+  Writeln('|-------------------------------------------------------------|');
+  Writeln('    You have been Running for a total of ' + TimeRunning + '');
+  Writeln('           You have managed to Tan ' + IntToStr(HidesDone) + ' Hides');
+  Writeln('         You are Tanning ' + IntToStr(((HidesDone) * 3600) / (GetTimeRunning / 1000)) + ' Hides per hour!');
+  Writeln('         Thankyou for using Caotoms Tanner :)');
+  Writeln('|-------------------------------------------------------------|');
+  SRLRandomsReport;
+  PaintSmart;
+end;
+
+
+procedure CheckRun;
+var
+  s: String;
+begin
+  if Rest then
+  begin
+    if GetMMLevels('run', s) <= 10 then
+      RestUntil(85);
+      SetRun(True);
+  end else
+    if GetMMLevels('run', s) >= 85 then
+      SetRun(True);
+end;
+
+procedure Mainloop;
+var
+  xB, yB, xT, yT: Integer;
+begin
+  if not LoggedIn then Exit;
+  CheckRun;
+  FindSymbol(xB, yB, 'Bank');
+  FindSymbol(xT, yT, 'Tanner');
+  if Distance(xB, yB, ((MMX1 + MMX2)/2), ((MMY1 + MMY2)/2)) <= 30 then
+    if InvHides = 28 then
+      WalkingToTanner
+    else
+      Banking
+  else
+    if InvHides = 28 then
+      if Distance(xT, yT, ((MMX1 + MMX2)/2), ((MMY1 + MMY2)/2)) <= 30 then
+        Tan
+      else
+        WalkingToTanner
+    else
+      if Distance(xB, yB, ((MMX1 + MMX2)/2), ((MMY1 + MMY2)/2)) <= 30 then
+        Banking
+      else
+        WalkToBank;
+end;
+
+begin
+  StartSetup(56, True, True);
+  ClickNorth(0);
+  HidesDone := 1;
+  SymbolAccuracy := 0.45;
+  Fail := 0;
+  CheckRun;
+  LoadVars;
+  Wait(1000+random(100));
+  repeat
+    Writeln(InvHides);
+    Mainloop;
+    Proggy;
+  Until(not LoggedIn) or (Fail >= 5);
+  Logout;
+  FreeVars;
+end.

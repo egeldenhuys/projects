@@ -1,0 +1,635 @@
+   program EastVarrokMiner;
+   //code generated with Custom path generator for SPS by Cynic
+   {$DEFINE SMART}
+   {$DEFINE SRL5}
+   {$i srl\srl.simba}
+   {$i SPS\SPS.simba}
+   {$IFDEF SMART}
+     {$i SRL/SRL/Misc/SmartGraphics.Simba}
+   {$ENDIF}
+   type
+    TObjects = record
+    Name   : String;
+    UpText : TStringArray;
+    Color  : Integer;
+    Hue    : Extended;
+    Sat    : Extended;
+    Tol    : Integer;
+  end;
+   const
+   Drawing = false;
+   Break_In        = 180;
+   Break_For       = 10;
+   R_Break_In      = 10;
+   R_Break_For     = 5;
+   Ore = 0;//0: iron, 1: tin, 2: copper;
+   Banking = false;//
+
+   var
+     //place your variables here
+     Status: string;
+     StartXP,TotalB,StartTime: Integer;
+      BreakRounds, TotalBreaks,Start,PlayerBreaked,lvl,MinedOre: integer;
+     RBI, RBF, BI, BF: integer;
+     Banker: TObjects;
+     RockPattern: Array Of TIntegerArray;
+
+
+  procedure DeclarePlayers;
+   begin
+      HowManyPlayers:=1;
+      NumberOfPlayers(HowManyPlayers);
+      CurrentPlayer:=0;
+      with Players[0] do
+      begin
+         Name:='';
+         Pass:='';
+         Boxrewards:=['xp','xp','lamp'];
+         LampSkill:=SKILL_MINING;
+         Pin:='';
+         Worldinfo:=[true,0];
+         Active:=true;
+      end;
+
+ end;
+ {******************************************************************************
+function BreakHandler(Break_In, Break_For, R_Break_In, R_Break_For: Integer): Boolean;
+By: Echo_
+Edited by: Jakkle.
+Description: Takes brakes according to the minute values entered.
+*******************************************************************************}
+function BreakHandler(Break_In, Break_For, R_Break_In, R_Break_For: Integer): Boolean;
+var
+  h, m, s,
+  TheBTime, StartBTime, WorkedFor: integer;
+begin
+  if not LoggedIn then Exit;
+  if (Break_In < 1) then Exit;
+
+  if (HowManyPlayers = 1) then
+  begin
+    if (GetTimeRunning < ((BI) + (RBI) + BreakRounds)) then Exit
+    else
+      if (GetTimeRunning > ((BI) + (RBI) + BreakRounds)) then
+      begin
+        TheBTime := (BF + RBF);
+        WorkedFor := (BI + RBI)
+        Writeln('Taking a break for about ' + IntToStr((TheBTime) / 60000) + ' minutes.');
+        Logout;
+        MarkTime(StartBTime);
+        repeat
+          ConvertTime(((BF + RBF) - TimeFromMark(StartBTime)), h, m, s);
+          ClearDebug;
+          Writeln('Breaktime left: ' + IntToStr(h) + ':' + IntToStr(m) + ':' + IntToStr(s));
+          Wait(990);
+        until(TimeFromMark(StartBTime)>=(TheBTime));
+        Writeln('Break time over.');
+        Writeln('Logging in.');
+        LoginPlayer;
+        Result := LoggedIn;
+        MarkTime(Start);
+        FindNormalRandoms;
+        IncEx(BreakRounds, (WorkedFor + TheBTime));
+        IncEx(PlayerBreaked, (TheBTime / 60000));
+        IncEx(TotalBreaks, 1);
+        Writeln('The next break will occur in about ' + IntToStr(Break_In) + ' minutes.');
+      end;
+  end;
+end;
+
+procedure Dbg(S: String);
+begin
+  {$IFDEF DEBUG}
+    WriteLn(S);
+  {$ENDIF}
+end;
+
+ function InArea(Pt1, Pt2: TPoint): Boolean;       // Look If In Specific Area
+  var                                               // Credits to Mat's InArea function
+  Loc: TPoint;
+   Box: TBox;
+Begin
+  Loc := SPS_GetMyPos;
+  Box := PointToBox(Pt1, Pt2);
+  If (PointInBox(Loc, Box)) then
+  Begin
+    Result := True
+  End else
+  Begin
+    Result := False;
+  End;
+End;
+
+{***MINING ROUTINE***}
+function OreColor(col: integer): Integer;
+var
+  arP: TPointArray;
+  arC: TIntegerArray;
+  tmpCTS, i, arL: Integer;
+  X, Y, Z: Extended;
+  orecol: integer;
+begin
+FindNormalRandoms;
+ begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.06, 0.22);
+  case col of
+  0: orecol:=3030376;//iron
+  1: orecol:=9671579;//tin
+  2: orecol:=4883423;//copper
+  end;
+  FindColorsSpiralTolerance(MSCX, MSCY, arP, orecol, MSX1, MSY1, MSX2, MSY2, 5);
+  if (Length(arP) = 0) then
+  begin
+    Dbg('Failed to find the color, no result.');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+  arC := GetColors(arP);
+  ClearSameIntegers(arC);
+  arL := High(arC);
+  for i := 0 to arL do
+  begin
+    ColorToXYZ(arC[i], X, Y, Z);
+    if (X >= 5.69) and (X <= 10.58) and (Y >= 4.71) and (Y <= 8.64) and (Z >= 2.51) and (Z <= 4.38) then
+    begin
+      Result := arC[i];
+      Dbg('OreColor = ' + IntToStr(arC[i]));
+      Break;
+    end;
+  end;
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+  if (i = arL + 1) then
+    Dbg('OreColor failed in finding the color.');
+ end;
+end;
+function FindOre: Boolean;
+var
+  arP, arAP: TPointArray;
+  arC, arUC: TIntegerArray;
+  ararP: T2DPointArray;
+  tmpCTS, i, j, arL, arL2: Integer;
+  P: TPoint;
+  X, Y, Z: Extended;
+begin
+  tmpCTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(0.08, 0.94);
+
+  if not(FindColorsTolerance(arP, OreColor(Ore), MSX1, MSY1, MSX2, MSY2, 6)) then
+  begin
+    Dbg('Rock Color not found...');
+    ColorToleranceSpeed(tmpCTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+
+  arC := GetColors(arP);
+  arUC := arC;
+  ClearSameIntegers(arUC);
+  arL := High(arUC);
+  arL2 := High(arC);
+
+  for i := 0 to arL do
+  begin
+    ColorToXYZ(arC[i], X, Y, Z);
+
+    if (X >= 4.13) and (X <= 10.17) and (Y >= 3.71) and (Y <= 8.43) and (Z >= 2.49) and (Z <= 4.36) then
+    begin
+      for j := 0 to arL2 do
+      begin
+        if (arUC[i] = arC[j]) then
+        begin
+          SetLength(arAP, Length(arAP) + 1);
+          arAP[High(arAP)] := arP[j];
+        end;
+      end;
+    end;
+  end;
+
+  SortTPAFrom(arAP, Point(MSCX, MSCY));
+  ararP := SplitTPAEx(arAP, 10, 10);
+  arL := High(ararP);
+
+  for i := 0 to arL do
+  begin
+    if (Length(ararP[i]) < 10) then Continue;
+    P := MiddleTPA(ararP[i]);
+    MMouse(P.x, P.y, 5, 5);
+    Wait(100 + Random(100));
+    if (IsUpText('Min')) then
+    begin;
+      Mouse(p.x, p.y, 0, 0, True);
+      Result := True;
+      Break;
+    end;
+  end;
+
+  ColorToleranceSpeed(tmpCTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+
+  if (i = arL + 1) then
+  begin
+    Dbg('Rock not found...');
+    Exit;
+  end;
+end;
+
+
+function WaitUntilMined: Boolean;
+var
+  t, IC: Integer;
+begin
+  IC := 0;
+  t := 0;
+  MarkTime(t);
+  repeat
+    Wait(10);
+    if (TimeFromMark(t) >= 4000) then Exit;
+  until (not FlagPresent) and FindBlackChatMessage('u swi');
+  IC := InvCount;
+  t := 0;
+  MarkTime(t);
+  repeat
+    Wait(10);
+    if (TimeFromMark(t) >= 8000) then Exit;
+    Wait(750);  //was 500
+    if Levelup then
+    begin
+      Dbg('Congratz you gained another level');
+      Inc(lvl);
+    end;
+    if IC <> InvCount then
+      Break;
+  until (FindBlackChatMessage('anage'));
+  Result := True;
+end;
+Procedure FastDropOres;
+var OreMid,I,X,Y,R,GemDTM:Integer;
+    SlotBox:TBox;
+
+Begin
+  If Not(LoggedIn) Then Exit;
+  R:= Random(2);
+  OreMid := DTMFromString('mrAAAAHic42BgYBAAYl4g5gZiESAWB2IuBgiQAWJ+IOaE8kHyEkAsDFXHCsRmCiARJpz4PwN+wEgAwwAA/qACeA==');
+
+  GemDTM:=  DTMFromString('mggAAAHicY2NgYOACYk4gFgFiRiAWZoAAbijNCRUTA2JmIOYXKgKSTBj4PwN2wIgDQwAAmeYCJA==');
+
+  If Not(LoggedIn) Then Exit;
+
+  For I:=0 to 27 Do
+  Begin
+    SlotBox:=InvBox(RockPattern[R][I]);
+    If FindColor(X, Y, 131072, SlotBox.X1, SlotBox.Y1, SlotBox.X2, SlotBox.Y2) Then
+    Begin
+      If FindDTm(OreMid, X, Y, SlotBox.X1, SlotBox.Y1, SlotBox.X2, SlotBox.Y2) Then
+      Begin
+        Mouse(X, Y, 5, 5, False);
+        WaitOption('rop', 250);
+        Continue
+      End;
+      Continue;
+  End;
+  FreeDTM(GemDTM);
+  FreeDTM(OreMid);
+End;
+End;
+
+
+procedure AntiBan;
+begin
+  if(not(LoggedIn))then
+  Exit;
+  case Random(100) of
+   0-10:
+   begin
+     HoverSkill('Mining', false);
+     wait(2453+Random(432));
+   end;
+   10-40: PickUpMouse;
+   40-100:
+   begin
+     MakeCompass('N');
+     wait(100+random(133));
+     MakeCompass('S');
+     wait(50+random(133));
+     MakeCompass('N');
+   end;
+  end;
+end;
+
+{***BANKING ROUTINE***}
+Procedure FillBanker;
+begin
+  with Banker do
+        begin
+          Name    := 'Banker';
+          UpText  := ['Banker', 'anker', 'anke'];
+          Color   := 5584960;
+          Hue     := 0.23;
+          Sat     := 0.91;
+          Tol     := 9;
+        end;
+end;
+
+function FindBanker: Boolean;
+var
+  CTS: Integer;
+  TheArray: TPointArray;
+begin
+  FindNormalRandoms;
+  if (not LoggedIn) or (BankScreen) then
+    Exit;
+  Result := False;
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Banker.Hue, Banker.Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TheArray, Banker.Color, MSX1, MSY1, MSX2, MSY2, Banker.Tol);
+  if (Length(TheArray) >= 10) then
+    Result := True;
+  ColorToleranceSpeed(CTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+end;
+
+function ClickBanker: Boolean;
+var
+  CTS, HBT, x, y, i: Integer;
+  TheArray: TPointArray;
+  MSPoint: TPoint;
+  BankATPA: T2DPointArray;
+  Bounds: TBox;
+begin
+  FindNormalRandoms;
+  if (not LoggedIn) or (not FindBanker) or (BankScreen) then
+    Exit;
+  Result := False;
+  CTS := GetColorToleranceSpeed;
+  ColorToleranceSpeed(2);
+  SetColorSpeed2Modifiers(Banker.Hue, Banker.Sat);
+  FindColorsSpiralTolerance(MSCX, MSCY, TheArray, Banker.Color, MSX1, MSY1, MSX2, MSY2, Banker.Tol);
+  if (Length(TheArray) < 10) then
+  begin
+    Dbg('Did not find enough ' +  Banker.Name + ' colours.');
+    ColorToleranceSpeed(CTS);
+    SetColorSpeed2Modifiers(0.2, 0.2);
+    Exit;
+  end;
+  {$IFDEF SMART}
+    if (Drawing) then
+    begin
+      SMART_DrawDots(TheArray);
+    end;
+  {$ENDIF}
+  SortTPAFrom(TheArray, Point(MSCX, MSCY));
+  BankATPA := TPAToATPAEx(TheArray, 20, 50);
+  SortATPAFromSize(BankATPA, 100, True);
+  HBT := High(BankATPA);
+  for i := 0 to HBT do
+  begin
+    Bounds := GetTPABounds(BankATPA[i])
+    {$IFDEF SMART}
+      if (Drawing) then
+      begin
+        SMART_DrawBox(Bounds);
+      end;
+    {$ENDIF}
+    MSPoint := MiddleTPA(BankATPA[i]);
+    MMouse(MSPoint.x, MSPoint.y, 2, 2);
+    if (WaitUpTextMulti(Banker.UpText, 1000)) then
+    begin
+      GetMousePos(x, y);
+      Mouse(x, y, 0, 0, False);
+      if (WaitOption('Bank Bank', 1000)) then
+      begin
+        Dbg('Clicked banker');
+        {$IFDEF SMART}
+          if (Drawing) then
+          begin
+            SMART_ClearCanvas;
+          end;
+        {$ENDIF}
+        ColorToleranceSpeed(CTS);
+        SetColorSpeed2Modifiers(0.2, 0.2);
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+  ColorToleranceSpeed(CTS);
+  SetColorSpeed2Modifiers(0.2, 0.2);
+end;
+
+{***WALKING ROUTINE***}
+  procedure  BankToMine;
+   var
+     BankToMinePath: TPointArray;
+   begin
+      BankToMinePath:=[Point(197,142),Point(197,117),Point(198,102),Point(216,102),Point(239,102),Point(253,104),Point(273,104),Point(287,104),Point(299,115),Point(312,132),Point(316,145),Point(327,163),Point(351,180),Point(352,195),Point(357,223),Point(355,250),Point(361,284),Point(371,315),Point(340,341),Point(329,364)];
+     if SPS_WalkPath(BankToMinePath) then
+      Status := 'BankToMine'
+       else begin
+        Status :='Failed BankToMine';
+        WriteLn(status + '#Time Running:' +TimeRunning);
+        Logout;
+        TerminateScript;
+       end;
+      WriteLn(status + '#Time Running:' +TimeRunning);
+     end;
+
+  procedure  MineToBank;
+   var
+     MineToBankPath: TPointArray;
+   begin
+     MineToBankPath:=[Point(323,367),Point(335,342),Point(358,332),Point(379,329),Point(365,293),Point(360,273),Point(360,239),Point(359,201),Point(336,168),Point(338,142),Point(323,131),Point(315,121),Point(297,111),Point(278,103),Point(247,111),Point(220,104),Point(204,104),Point(198,109),Point(198,137)];
+     if SPS_WalkPath(MineToBankPath) then
+      Status := 'MineToBank'
+       else begin
+        Status :='Failed MineToBank';
+        WriteLn(status + '#Time Running:' +TimeRunning);
+        Logout;
+        TerminateScript;
+       end;
+      WriteLn(status + '#Time Running:' +TimeRunning);
+     end;
+  procedure SetupWalker;
+   begin
+     SRL_SIXHOURFIX := TRUE;
+     SMART_FIXSPEED := TRUE;
+     SetupSRL;
+     DeclarePlayers;
+     LoginPlayer;
+      Wait(898+ Random(352));
+     ClickNorth(SRL_ANGLE_HIGH);
+     SPS_Setup(RUNESCAPE_OTHER,['varrokMiner']);
+     ToggleXPBar(True);
+     StartXP := getXPBarTotal;
+     FillBanker;
+     MarkTime(StartTime);
+      SetArrayLength(RockPattern,2);
+      RockPattern[0]:=[1,5,9,13,17,21,25,2,6,10,14,18,22,26,3,7,11,15,19,23,27,4,8,12,16,20,24,28];
+      RockPattern[1]:=[1,5,9,13,17,21,25,26,22,18,14,10,6,2,3,7,11,15,19,23,27,28,24,20,16,12,8,4];
+  end;
+  {*****LOGIC*****}
+  procedure Bank;
+var
+  PinTries, Tries, WithdrawTries, EmptyCount, FindBankTries,Dx,Dy: Integer;
+begin
+  FindNormalRandoms;
+  if (not LoggedIn) then
+    Exit;
+  PinTries := 0;
+  Tries := 0;
+  FindBankTries := 0;
+  if (FindBanker) then
+  repeat
+    Wait(RandomRange(1500, 2000));
+    if (not FindBanker) then
+      Break;
+    Dbg('Found banker.');
+    Dbg('Click the banker.');
+    if (ClickBanker) then
+    begin
+      repeat
+        while (IsMoving) do
+          Wait(100);
+        if (BankScreen) then
+          Break;
+        FindNormalRandoms;
+        if (not LoggedIn) then
+          Exit;
+        if (PinScreen) then
+        begin
+          InPin(Players[CurrentPlayer].Pin);
+          Inc(PinTries);
+          Dbg('Tried bank pin ' + inttostr(PinTries) + ' times.');
+        end;
+        Dbg('Pin screen not found.');
+      until (BankScreen) Or (PinTries > 3);
+    end;
+    if (BankScreen) then
+      Break;
+    if (PinTries > 3) then
+    begin
+      NextPlayer(False);
+      Exit;
+    end;
+    Inc(Tries);
+  until (Tries > 10);
+  Wait(300 + Random(200));
+  FindNormalRandoms;
+  if (Tries > 10) then
+  begin
+    Dbg('Could not click the banker, logging out.');
+    NextPlayer(False);
+    Exit;
+  end;
+  if (BankScreen) then
+  begin
+    Wait(100 + Random(100));
+    Wait(200 + Random(300));
+    DepositAll;
+    Wait(200 + Random(500));
+    case Random(10) of
+      0..3 : CloseWindow;
+    end;
+    FindNormalRandoms;
+    Inc(TotalB);
+end;
+if not InvFull then
+BankToMine;
+end;
+
+procedure Progress;
+var
+CurrXp: integer;
+XPGained: integer;
+XPHour: integer;
+begin
+if not banking then
+begin
+ CurrXP:=GetXPBarTotal;
+  XPGained:=CurrXP - StartXP;
+  XPHour:= (3600*XPGained) / ((Getsystemtime-StartTime)/1000);
+  case ore of
+  0: MinedOre:=Round(XPGained/35);
+  1: MinedOre:=Round(XPGained/17.5);
+  2: MinedOre:=Round(XPGained/17.5);
+  end;
+  WriteLn(' ');
+  WriteLn('<============== - Report ===============>');
+  writeln('Worked for '+ TimeRunning);
+  writeln('Banked  '+ IntToStr(TotalB)+ ' Times');
+  writeln('XP Gain '+ ToStr(XPGained));
+  writeln('XP Hour '+ ToStr(XPHour));
+  writeln('Total ore mined: '+ ToStr(MinedOre));
+  writeln('Lvl gained ' + toStr(lvl));
+  Writeln(' ');
+ end else
+  begin
+  CurrXP:=GetXPBarTotal;
+  XPGained:=CurrXP - StartXP;
+  XPHour:= (3600*XPGained) / ((Getsystemtime-StartTime)/1000);
+  case ore of
+  0: MinedOre:=Round(XPGained/35);
+  1: MinedOre:=Round(XPGained/17.5);
+  2: MinedOre:=Round(XPGained/17.5);
+  end;
+  WriteLn(' ');
+  WriteLn('<============== - Report ===============>');
+  writeln('Worked for '+ TimeRunning);
+  writeln('XP Gain '+ ToStr(XPGained));
+  writeln('XP Hour '+ ToStr(XPHour));
+  writeln('Total ore mined: '+ ToStr(MinedOre));
+  writeln('Lvl gained ' + toStr(lvl));
+  Writeln(' ');
+  end;
+end;
+
+Procedure MainLoop;
+begin
+  if (TimeFromMark(Start) < 2000) then
+            begin
+              BI  := (Break_In * 60000);
+              BF  := (Break_For * 60000);
+              RBI := RandomRange(-R_Break_In * 60000, R_Break_In * 60000);
+              RBF := RandomRange(-R_Break_For * 60000, R_Break_For * 60000);
+            end;
+ Writeln('Taking a break in (' + IntToStr(((BI + RBI) - TimeFromMark(Start)) / 60000) + ' Mins)');
+ if not banking then
+ begin
+ if InvFull then
+  begin
+  MineToBank;
+  repeat
+  Bank;
+  until not InvFull;
+  end else
+  begin
+  FindOre;
+  WaitUntilMined;
+  Antiban;
+  progress;
+  end;
+  end else
+  begin
+   FindOre;
+   WaitUntilMined;
+   Antiban;
+   progress;
+   if InvFull then
+   FastDropOres;
+  end;
+end;
+  begin
+  SetupWalker;
+  repeat
+  begin
+  MainLoop;
+  BreakHandler(Break_In, Break_For, R_Break_In, R_Break_For);
+  end;
+  until false;
+  end.
+

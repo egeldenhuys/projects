@@ -1,0 +1,62 @@
+program ChocolateDuster;
+// version 0.1
+
+{$DEFINE SMART}
+{$i srl/srl.simba}
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :=''; // Username
+  Players[0].Pass :=''; // Password
+  Players[0].Nick :=''; // 3 Lower case letters of the name
+  Players[0].Active:=True;
+
+end;
+
+procedure BankDust;
+begin
+
+end;
+
+procedure MakeDust;
+begin
+
+end;
+
+procedure WithdrawBars;
+begin
+
+end;
+
+procedure MainLoop;
+begin
+  repeat
+
+  WithdrawBars;
+  MakeDust;
+  BankDust;
+
+
+  until(AllPlayersInactive)
+end;
+
+
+begin
+
+  {$IFDEF SMART}
+    SRL_SixHourFix := True;
+    Smart_FixSpeed := True;
+  {$ENDIF}
+
+  SetUpSRL;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+  MainLoop;
+
+end.
+

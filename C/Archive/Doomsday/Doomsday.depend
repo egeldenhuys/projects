@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1365067351 source:c:\users\evert\dropbox\sdd\c\doomsday\main.c
+	<stdio.h>
+	<stdlib.h>
+	<assert.h>
+

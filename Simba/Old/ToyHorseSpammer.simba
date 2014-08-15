@@ -1,0 +1,116 @@
+// Horse needs to be in the first slot
+// Version 0.05
+
+program ToyHorseSpammer;
+{$DEFINE SMART}
+{$i srl/srl.simba}
+{$i srl/srl/misc/users.simba}
+
+var
+  Spam : Boolean;
+  CurrentText, LastText, Mode : string;
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+
+  Players[0].Name :=''; // Username
+  Players[0].Pass :=''; // Password
+  Players[0].Nick :=''; // 3 Lower case letters of the name
+  Players[0].Active:=True;
+
+end;
+
+procedure FollowPlayer;
+var
+  playerFound : boolean;
+  x, y : integer;
+
+begin
+  Spam := False;
+  writeln('Follow Player');
+  playerFound := False;
+
+  repeat
+
+  if FindObjEx(x, y, ['alk here B0T A11'], [8870972], 5, 1, MSX1, MSY1, MSX2, MSY2) then
+  begin
+    writeln('Found Player');
+    Mouse(x, y, 0, 0, False);
+    writeln('Clicked Player');
+    ChooseOption('ollow B0T A11');
+    writeln('Following Player');
+    playerFound := True;
+  end;
+
+  wait(200);
+  until(playerFound);
+
+end;
+
+procedure ClickHorse;
+begin
+  InvMouse(1, 1);
+  wait(200);
+end;
+
+procedure CheckForCommand;
+begin
+  writeln('Checking for commands');
+
+  CurrentText := GetChatBoxText(8, 11469039);   // Pink/Purple
+
+  if (CurrentText <> LastText) then
+  begin
+    case CurrentText of
+      '@start':
+        Spam := True;
+
+      '@stop':
+        Spam := False;
+
+      '@follow':
+        FollowPlayer;
+
+      '@mode h':
+        Mode := 'Horse';
+
+      '@mode t':
+        Mode := 'Talk';
+    end;
+  end;
+
+  LastText := CurrentText;
+
+end;
+
+procedure MainLoop;
+begin
+  repeat
+    if (Spam) then
+      ClickHorse;
+
+    CheckForCommand;
+    wait(200);
+
+  until(False)
+end;
+
+
+begin
+
+  {$IFDEF SMART}
+    SRL_SixHourFix := True;
+    Smart_FixSpeed := True;
+  {$ENDIF}
+
+  SetUpSRL;
+  ActivateClient;
+  DeclarePlayers;
+  LoginPlayer;
+  MainLoop;
+
+end.
+

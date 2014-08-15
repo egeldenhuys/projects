@@ -1,0 +1,25 @@
+﻿<Page x:Class="Page1"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" Title="Page1" Height="331" Width="358">
+    <Grid>
+        <Button Height="73" Margin="10,10,275,0" Name="Slot7" VerticalAlignment="Top" FontSize="32" />
+        <Button Height="73" Margin="89,12,196,0" Name="Slot8" VerticalAlignment="Top" FontSize="32" />
+        <Button Height="73" Margin="168,12,117,0" Name="Slot9" VerticalAlignment="Top" FontSize="32" Padding="0" ClickMode="Release" />
+        <Button Height="73" Margin="10,89,275,0" Name="Slot4" VerticalAlignment="Top" FontSize="32" />
+        <Button Height="73" Margin="89,89,196,0" Name="Slot5" VerticalAlignment="Top" FontSize="32" />
+        <Button Height="73" Margin="168,91,117,0" Name="Slot6" VerticalAlignment="Top" FontSize="32" />
+        <Button Height="73" Margin="10,168,275,0" Name="Slot1" VerticalAlignment="Top" FontSize="32" />
+        <Button Height="73" Margin="89,168,196,0" Name="Slot2" VerticalAlignment="Top" FontSize="32" />
+        <Button Height="73" Margin="168,168,117,0" Name="Slot3" VerticalAlignment="Top" FontSize="32" />
+        <Button Content="Reset" Height="23" HorizontalAlignment="Left" Margin="12,260,0,0" Name="btnReset" VerticalAlignment="Top" Width="75" ToolTip="Double Click to reset score" />
+        <Label Content="P1 Score: 0" HorizontalAlignment="Left" Margin="195,260,0,43" Name="lblP1Score" />
+        <Label Content="P2 Score: 0" Height="28" HorizontalAlignment="Left" Margin="195,283,0,0" Name="lblP2Score" VerticalAlignment="Top" />
+        <Label Content="Ties: 0" Height="28" HorizontalAlignment="Left" Margin="195,303,0,0" Name="lblTies" VerticalAlignment="Top" />
+        <Label Content="Player 1" Height="28" HorizontalAlignment="Left" Margin="89,291,0,0" Name="lblPlayer" VerticalAlignment="Top" />
+        <Label Content="Player's Turn:" Height="28" HorizontalAlignment="Left" Margin="12,291,0,0" Name="Label1" VerticalAlignment="Top" />
+        <Label Content="Label" Height="28" HorizontalAlignment="Left" Margin="283,116,0,0" Name="Label2" VerticalAlignment="Top" />
+    </Grid>
+</Page>

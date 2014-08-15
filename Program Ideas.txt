@@ -1,0 +1,361 @@
+== File Backup ==
+Form to customise compression settings and toggle compression.
+Performs automatic backups on the selected files/directories.
+
+Where will the backups be stored?
+
+== Digital Clock ==
+Coloured text, customizable.
+Alarm for the non compact version
+
+== Minecraft Mod Manager ==
+Features:
+	* Copies original .jar to Mod Manager Folder. 
+Copies original .Jar to Mod manager Folder. When mods have been selected to be installed the jar in the bin is replaced by the original non modified jar.
+Mods then get added to the new jar in the bin. This allows for mods to be uninstalled
+Profiles can be created and downloaded. Profiles can point to downloads for the mods. Profiles contain the order in which mods are installed.
+Players can submit their own profiles but a server would be needed.
+Program can check for updates by downloading text file from Dropbox.
+Feedback can be submitted but would require a server.
+Allows the user to save their own mod profiles.
+Allows the user to create save copies of different jar versions.
+Alerts the user when a new snapshot has been released and downloads it for them.
+Label that shows latest updates - hash database updates
+The program identifies the Minecraft .jar version from a database of SHA512 Hashes.
+users might be able to submit the hash of their unmodified jars
+
+== Minecraft Server Manager ==
+Features:
+	Button that sends commands
+	built in console
+	auto map backup using 7 zip
+	note specific to maps
+	easy settings changing - saves per level
+	alerts to payer when an error occurs
+	auto update
+	change amount of ram
+	
+== Minecraft Version Changer ==
+Downloads the patch and applies it to the latest minecraft version
+	
+== Directory to HTML. File Mapper ==
+Reads all the filenames in a directory then creates a HTML page with links to all
+the files in the directory. The Index will have the same structure as the folder.
+This will make it easy to only download the files they want.
+
+This page will be hosted on Dropbox, For archives.
+
+PROBLEM: You can not download folders.
+
+Possible solutions:
+1) Download all the files in that folder. Files in sub folders will also need to be downloaded.
+2) Compressed folder.
+
+Add every file to it's own .zip
+
+== HTML To Do list ==
+Dynamic.
+JavaScript.
+Offline.
+
+== Downloader ==
+Other programs send arguments to it
+Url, save path etc.
+Able to extract zip files.
+Progress bars.
+Part of program's updating process.
+
+== File encrypter ==
+Encrypt files and directories.
+Decrypt with password.
+Main purpose is for Dropbox
+ - Truecrypt solves this problem.
+ 
+== Minecraft username scraper==
+Browser a given thread and saves all usernames that are 6 long.
+
+== Minecraft on Steam ==
+runs minecraft.exe then waits for it to close before closing itself.
+Hide to system tray.
+
+== Movie Converter ==
+User gives a path to the movies to be converted to the specified format.
+The video are converted by passing arguments to VLC medo player.
+
+== Custom Shortcuts ==
+A program that acts as the desktop. icons are displayed and draggable.
+It has a grid that fits the screen size. Shortcuts can be customized.
+It might be able to replace the actual desktop to some extend by going fullscreen with no borders.
+It would be good if you can drag current icons into it.
+
+== Runescape Online Players ==
+This program gets the amount of players currently online and saves it with a timestamp.
+
+== File Sync ==
+Compares the left and right side using the date modified and the size to find different files.
+Copies and replaces files to both sides after asking the user.
+
+== Imperion Helper == (Merge with Imperion Account Watcher)
+Shows Building, Fleet and defence building que from all planets on the same page.
+
+Stand alone version can auto upgrade building - Custom AI can be set
+Example:
+If <Resource> = <Amount> Then
+	Upgrade(<Building>)
+End If
+
+Alerts you when there is a report or incoming attack.
+
+Possible desktop client and web script.
+
+== Imperion Account Watcher ==
+Features:
+	* Auto Harvest - Automatically harvest debris fields and comets.
+	* Auto Retreat - Removes ships and resources from a planet that is under attack.
+	* Auto Upgrade - Automatically upgrade the selected buildings (meeting certain conditions)
+	* Auto Build - Build ships (meeting certain conditions)
+
+Example of conditions:
+	If there are enough resources build:
+	Build (x) amount of:
+
+- Auto Retreat -	
+Checks every few seconds/minutes if there is an incoming attack. If there is do the follow actions the use chooses:
+Transport a certain amount or all resources to a safe inside planet.
+Deploy a certain amount or all ships to a safe planet
+
+The ships stay on the safe planet until the user moves them off.
+
+If a fleet is on it's way to the attacked planet the program will send them off as soon as they arrive, if it is not too late.
+
+One tactic for when an attack is incoming is to remove all ships and resources from the attacked planet.
+This way the attacker will receive close to none resources. The victim will not loose any ships or resources.
+
+== Program Idea Logger ==
+A program with a nice GUI for entering and displaying program ideas.
+Getting too hard to organise ideas in a text file.
+
+Template for each idea:
+	* Features
+	* Priority
+	* Notes
+	* Links
+	* Date Added
+	* Delete, Edit and Add new ideas.
+	* Backup ideas to Dropbox
+	* Project size
+
+== Minecraft Brute Force Name Scraper ==
+This program will find the Display Name of every premium Minecraft user.
+Display Name - The name that is displayed in game. E.G "John". Not John@example.com.
+The program needs to use a proxy for all requests to avoid possible IP bans as
+the program need to run for a very long time.
+
+Characters |           Combinations          | Download   | Maximum Size / Upload |
+-----------|---------------------------------|------------|-----------------------|
+1          | 36                              | 144 B      | 36 B                  |
+2          | 1,296                           | 5 KiB      | 2.5 KiB               |
+3          | 46,656                          | 182 KiB    | 136.6 kiB             |
+4          | 1,679,616                       | 6.4 MiB    | 6.4 MiB               |
+5          | 60,466,176                      | 230.6 MiB  | 288.3 MiB             |
+6          | 2,176,782,336                   | 8.1 GiB    | 12.1 GiB              |
+7          | 78,364,164,096                  | 291.9 GiB  | 510.8 GiB             |
+8          | 2,821,109,907,456               | 10.2 TiB   | 20.5 TiB              |
+9          | 101,559,956,668,416             |     -      |      -                |
+10         | 3,656,158,440,062,976           |     -      |      -                |
+11         | 131,621,703,842,267,136         |     -      |      -                |
+12         | 4,738,381,338,321,616,896       |     -      |      -                |
+13         | 170,581,728,179,578,208,256     |     -      |      -                |
+14         | 6,140,942,214,464,815,497,216   |     -      |      -                |
+15         | 221,073,919,720,733,357,899,776 |     -      |      -                |
++----------+---------------------------------+------------+-----------------------|
+
+From the table above it would only be possible to guess up to 6 characters in length.
+Any more than this would require too much time and storage space.
+Further more as the length of the name increases the chance of finding a premium
+name is reduced. There are only 10 million premium names at the moment.
+
+== Java Remote Control ==
+Client and server.
+Server runs at home on VM. Client runs on school laptop/computer.
+Like Teamviewer but in Java.
+Server takes screenshots and sends to client.
+Client sends keystrokes and mouse position to Server.
+Server moves the mouse and sends the keystrokes.
+Password is required to connect and for Ubuntu.
+
+== Brute force index(string).html guesser ==
+for http://141592653589793238462643383279502884197169399375105820974944592.com
+
+== Cookie Monster ==
+
+Run once, Wipe Everyday.
+
+Possible Deployment:
+	* Hidden in a VB project
+	* Attached to a harmless program
+	* 
+	
+Features:
+	* Logs keystrokes in undetectable way.
+	* Records running processes.
+	* Records window names.
+	* Ability to browse files on remote computer.
+	* Auto Updates
+	* Self monitoring - When it is deleted in one place it will move to another 5 locations.
+		- If one of it's processes are stopped it creates more and produces fake error messages.
+	* Packet capturing. Will steal passwords in plain text.
+	* Backdoor - Creates harmless application that will download new viruses.
+	* Screenshots
+	* Remote Control
+	* Uses the ICAR test file to annoy the user.
+	* Sandbox and virtualization detection
+	* Steals password files
+	* Captures clipboard
+
+Ways of stopping this program:
+	* Comodo personal firewall
+		- Will alert the user when the program tries to do something strange.
+	* Monitoring connections.
+	* Sandboxie with no internet access.
+		- User will see the virus being spread.
+	* AUC alert dialogues. This will alert the user that something is strange.
+	
+== Remote Minecraft Server Administrator ==
+Temporary Solution: TeamViewer with Dropbox.
+	Disadvantage: Heavy use of bandwidth due to video streaming.
+	Advantages: 
+		* Easy to set up. 
+		* Can be used for more than just Server administrating.
+		* Does not require any programming.
+		
+Allows you to run and administrate a Minecraft server running on a remote machine.
+
+This program should be very bandwidth efficient. Streams should be compressed.
+-- Client --
+
+The client will be written in VB.NET. 
+	The target OS is Windows.
+	The code audience is SDD students.
+	
+Features:
+	* Real time console
+		Server sends the text displayed in the console to the client
+	* Upload and download files to server folder
+		Browse a list of files and folders located on the server.
+		User can then chose which file/folder to download to their local machine.
+		When a user chooses to upload a file from their mirrored directory the file
+		on the server is replaced. A warning is given when the file is in used and
+		the move failed.
+	* Send commands to remote server console
+		There is a textbox for the user to enter a command into the console.
+		The result is displayed in the console after it is sent to the server.
+	* Debug information
+		An optional console is provided for displaying program debug information
+		
+-- Server --
+
+The server will be written in C. 
+	The target OS is Ubuntu.
+	The code audience is SDD students.
+	
+Features:
+	* Perform automatic backups and compresses them.
+		Backs up the selected worlds. Can make a backup on user demand.
+	* Listens for incoming connections on a specified port.
+	* Password protected
+		The user has to enter a password before they gain access to the remote server.
+	* Encrypted communication
+		Delicate information such as passwords are encrypted before being sent.
+		
+== Facebook Image Harvester ==
+
+Features:
+	* Downloads all full quality images on facebook
+
+== The Get A Life Program ==
+
+Features:
+	* Logs how many house you have spent on games and programs.
+	* Will randomly end processes.
+	* Reminds you to get off the computer.
+	* Tells you that you have no life then kills all processes.
+	* Changes your desktop background, telling you to get off and do homework.
+	
+== Minecraft Server Statistics ==
+
+This will be a Bukkit Plugin. it will record statistics for individual players
+and global. The statistics will be uploaded to Dropbox.
+Each player will have his own page with statistics.
+
+
+Features:
+	* Creates real-time graphs
+	* Records the following events
+		- Block place, break
+		- Blocks mined
+		- Food eaten
+		- Time online
+		- Mobs killed
+		- Players killed
+		- How many times joined
+		- Tools used
+		
+== Circle Drawings ==
+Given the equations of many circles and regions a image is produced
+
+== Note Editor ==
+
+Features:
+	* Notebooks
+	* Notes
+	* Plain Text Files
+	* Plain text formatting
+	* Custom headings
+
+== Desktop click heat map ==
+
+== IPCam Recorder ==
+
+== Dropbox Event Viewer ==
+
+Problem: The Dropbox website does not allow you to effectively see all the events.
+
+I want to be able to select a day and see a complete list of events.
+
+Features:
+	* Complete list of events.
+	* Ability to filter and sort events
+		- Only show events by certain person(s)
+		- Only show events for a certain file
+		- Only events between a certain time period
+		- Show events for the last set amount of days/weeks/months/years
+	* Real time alerts - Notifies you when an event occurred.
+	* Event graph
+	
+== Remote Command Prompt ==
+
+Features:
+	* Allows you to interact with a remote command prompt.
+	* Ability to transfer files from remote computer
+	* Ability to download the latest update from Host computer
+	* Client on remote computer.
+	* Server on local computer. This should not trigger AV on remote PC.
+	
+== File Names ==
+Returns a list of all file names in a directory
+	- Date
+	- Size
+	- Full Path
+
+== Windows program installer ==
+Downloads the latest version of all essential programs.
+
+== Dropbox Notes ==
+Allows you to edit text files and uplaod them to dropbox
+Similar to Evernote.
+
+== Remote minecraft server manager ==
+Enter the server address and login information.
+Allows you to do the basic commands and send custom commands.
+

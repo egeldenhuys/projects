@@ -1,0 +1,100 @@
+program New;
+{$DEFINE SMART}
+{$i SRL\SRL.Simba}
+{$i ObjectDTM\ObjDTMInclude.simba}
+
+(*------------------------------------------------------------------------------
+                            Object DTM Test Path
+                   Lumbridge courtyard -> Varrock West Bank
+
+   Instructions:
+
+   Fill in the 'DeclarePlayers' procedure.
+
+   Make sure you character is standing in the Lumbridge courtyard.
+
+   Hit run and watch.  Hopefully you make it.
+------------------------------------------------------------------------------*)
+
+
+procedure DeclarePlayers;
+begin
+  HowManyPlayers := 1;
+  NumberOfPlayers(HowManyPlayers);
+  CurrentPlayer := 0;
+  Players[0].Name := 'abot2@123.com';
+  Players[0].Pass := '123123';
+  Players[0].Member := False;
+  Players[0].Active := True;
+end;
+
+var
+
+  Path: TStringArray;
+  I: Integer;
+
+procedure Setup;
+begin
+
+  SRL_SixHourFix := True;
+  Smart_FixSpeed := True;
+
+  ClearDebug;
+  SetupSRL;
+
+  DeclarePlayers;
+
+  if not (LoggedIn) then
+    LoginPlayer;
+
+  ObjDTM_Setup;
+  ObjDTM_Debug := True;
+end;
+
+
+begin
+
+  Setup;
+
+    Path := ['643:85:3:1:7:622:126:0:7:665:105:0:7:665:63:4:612:67:652:67:652:106:612:106',
+    '680:57:4:1:7:610:126:1:7:650:47:0:7:654:105:0:7:654:63',
+    '679:85:3:0:7:599:95:0:7:648:138:1:7:640:104',
+    '646:30:3:1:7:592:103:3:7:659:97:3:7:639:132',
+    '619:32:3:1:7:639:38:1:7:662:45:1:7:603:37',
+    '619:32:3:1:7:610:93:1:7:610:77:2:7:622:103',
+    '600:36:3:1:7:618:89:1:7:630:72:3:7:641:49',
+    '620:34:3:1:7:605:108:1:7:590:92:3:7:600:88',
+    '634:28:3:1:7:596:146:1:7:558:59:3:7:606:142',
+    '634:27:4:1:7:647:69:1:7:614:56:3:7:636:81:3:7:619:68',
+    '591:33:4:1:7:610:81:1:7:609:114:3:7:649:77:3:7:608:60',
+    '608:28:4:1:7:627:97:1:7:601:93:3:7:620:76:3:7:603:80',
+    '590:42:3:3:7:645:77:3:7:639:136:3:7:623:140',
+    '609:34:4:1:7:605:75:1:7:601:96:1:7:640:52:1:7:600:118',
+    '629:29:4:1:7:618:89:1:7:643:89:1:7:613:109:1:7:660:81',
+    '618:16:2:0:7:602:90:0:7:606:65',
+    '597:57:2:1:7:607:78:0:7:654:78',
+    '610:32:2:0:7:573:82:1:7:635:102',
+    '589:47:1:3:7:638:27',
+    '627:85:2:1:7:573:65:1:7:587:107:6:645:53:647:100:663:100:663:112:612:112:612:53'];
+
+  if ObjDTM_InArea(Path[0], True) then
+  begin
+
+    WriteLn('Checking to see if you are in the courtyard..');
+    WriteLn('Good, you are in the courtyard!');
+
+    for I := 0 to 18 do
+    begin
+
+      WriteLn(i);
+      ObjDTM_Walk(Path[i], 0, 100, 80, True);
+    end;
+
+    if ObjDTM_InArea(Path[High(Path)], True) then
+      WriteLn('You made it to the bank!');
+  end else
+  begin
+
+    WriteLn('You need to start in the courtyard, please!');
+  end;
+end.

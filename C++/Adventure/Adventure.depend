@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1389604700 source:c:\users\evert\dropbox\sdd\projects\c++\adventure\main.cpp
+	<iostream>
+	<Windows.h>
+	"stuff.h"
+
+1389600842 c:\users\evert\dropbox\sdd\projects\c++\adventure\stuff.h
+

@@ -1,0 +1,73 @@
+program BotParty;
+//v0.5
+
+{$DEFINE SMART}
+{$i srl/srl.simba}
+
+
+procedure MainLoop;
+
+var
+  LastText, LastName, CurrentText, CurrentText2, CurrentName: String;
+  PName, PName2, CmdTag, CmdTag2 : TStringArray;
+
+begin
+Repeat
+  CurrentName := GetBlackChatMessage;
+  //CurrentText := GetChatBoxText(8, 28416);  //Green
+  CurrentText := GetChatBoxText(8, 128);   //Last Red Colour
+  //CurrentText := GetChatBoxText(8, clBlack);   //Black
+  CmdTag := Explode('#', CurrentText);
+  CmdTag2 := Explode('-', CurrentText);
+
+    //PName := Explode('y', CurrentName);
+    //PName2 := Explode('i', CurrentName);
+    //if (PName2[0] = 'T') then
+      //If (PName[0] <> 'd4') then
+        If (CurrentText <> LastText) then
+          If(CurrentText <> '') then
+            //If (CurrentText <> 'd4yl3 buck3t') then
+            If (CmdTag[0] <> '') Then
+            begin
+              //PName := Explode(']', CurrentName);
+              //Try
+              //  SendKeys(PName[1] + ': ' + CurrentText, 1);
+              //Except
+              //end;
+              //CurrentText2 := Replace(CurrentText, 'I ', 'You');
+              //CurrentText2 := Replace(CurrentText2, 'i ', 'You');
+
+              if (CmdTag2[0] = 'F2') Then
+                SendKeys('Flash2:' + CmdTag2[1],10, 1)
+              else
+              SendKeys(CurrentText,10, 1);
+
+              //SendKeys('/' + CurrentText, 1);
+              //SendKeys('/' + CurrentName + ': ' + CurrentText, 1);
+              //SendKeys(CurrentName + ': ' + CurrentText, 1);
+              TypeSend('');
+            end;
+
+        //Writeln(Currentname + CurrentText);
+         //writeln(currentText2);
+
+    LastName := CurrentName;
+    LastText := CurrentText;
+
+    Wait(100);
+
+  Until(false)
+
+end;
+
+begin
+ {$IFDEF SMART}
+      SRL_SixHourFix := True;
+      Smart_FixSpeed := True;
+  {$ENDIF}
+
+  ClearDebug;
+  SetupSRL;
+  ActivateClient;
+  MainLoop;
+end.
