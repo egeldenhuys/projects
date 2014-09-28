@@ -1,0 +1,211 @@
+<html>
+<head>
+<script src="js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="js/highcharts.js" type="text/javascript"></script>
+<script src="js/json2.js" type="text/javascript"></script>
+<script src="zoomTools.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+$.ajaxSetup({timeout:3000});
+
+var theData;
+var reloadTime = 20000;
+var chart;
+var startPoint;
+var done = false;
+var localTimezone;
+var timeOffset;
+var functionRan = false;
+var failCount = 0;
+// EDIT HERE
+$.get("https://dl.dropbox.com/u/133394013/2/StartPoint.txt",function(data){
+startPoint = data;
+var d = new Date();
+var n = d.getTimezoneOffset();
+localTimezone = "GMT+" + (-n / 60);
+timeOffset = n * 60 * 1000;
+startPoint = startPoint - n * 60 * 1000;
+part1 = true;
+
+AddLoad();
+});
+
+// EDIT HERE
+$.get("https://dl.dropbox.com/u/133394013/2/PlayerCount.txt",function(data){
+
+theData = data;
+theData = theData.slice(0, -1);
+part2 = true;
+AddLoad();
+});
+
+function AddLoad()
+{
+if(part1)
+{
+if(part2)
+{
+DoChart();
+ViewLastHour();
+setTimeout("ReloadData()", reloadTime);
+}
+}
+}
+
+function DoChart()
+{
+chart = new Highcharts.Chart({
+chart: {
+renderTo: 'container',
+zoomType: 'x',
+spacingRight: 20,
+ignoreHiddenSeries: false
+},
+credits: {
+enabled: false
+},
+title: {
+text: "Interval: 5 seconds"
+},
+xAxis: {
+type: 'datetime',
+maxZoom: 600000, // 10 Minutes
+},
+yAxis: {
+title: {
+text: 'Players Online'
+},
+showFirstLabel: false
+},
+tooltip: {
+shared: true
+},
+legend: {
+enabled: false
+},
+plotOptions: {
+area: {
+fillColor: {
+linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+stops: [
+[0, Highcharts.getOptions().colors[0]],
+[1, 'rgba(2,0,0,0)']
+]
+},
+lineWidth: 1,
+marker: {
+enabled: false,
+fillColor: "#C92A2A",
+lineColor: "#C92A2A",
+states: {
+hover: {
+enabled: true,
+radius: 3
+}
+}
+},
+shadow: false,
+states: {
+hover: {
+lineWidth: 1
+}
+},
+threshold: null,
+connectNulls: true
+}
+},
+
+series: [{
+type: 'area',
+name: 'Players',
+// EDIT HERE
+pointInterval: 5000,
+pointStart: parseInt(startPoint),
+data: JSON.parse("[" + theData + "]")
+}]
+});
+}
+
+
+function ReloadData()
+{
+
+setTimeout("TimedOut()", 3500);
+
+var ajaxTime= new Date().getTime();
+// EDIT HERE
+$.get("https://dl.dropbox.com/u/133394013/2/PlayerCount.txt",function(data){
+var totalTime = new Date().getTime() - ajaxTime;
+theData = data;
+theData = theData.slice(0, -1);
+chart.series[0].setData(JSON.parse("[" + theData + "]"), true);
+
+var responseTime;
+
+if(totalTime >= 1000)
+{
+responseTime = (totalTime / 1000) + "s";
+}
+else
+{
+responseTime = totalTime + "ms";
+}
+
+setTimeout("ReloadData()", reloadTime);
+functionRan = true;
+failCount = 0;
+
+ViewLastHour();
+
+});
+};
+
+function TimedOut()
+{
+if (functionRan == false)
+{
+
+setTimeout("ReloadData()", 5000);
+failCount += 1;
+
+}
+functionRan = false;
+
+}
+
+function ViewLastHour()
+{
+var d = new Date();
+var n = d.getTime();
+
+chart.xAxis[0].setExtremes((n - 3600000 * zoomLevel) - timeOffset, n - timeOffset + 5 * 60 * 1000);
+chart.showResetZoom();
+}
+
+function ViewLast24Hours()
+{
+var d = new Date();
+var n = d.getTime();
+
+chart.xAxis[0].setExtremes((n - 24 * 60 * 60 * 1000) - timeOffset, n - timeOffset + 15 * 60 * 1000);
+chart.showResetZoom();
+}
+
+function ResetZoom()
+{
+var d = new Date();
+var n = d.getTime();
+extremes = chart.xAxis[0].getExtremes();
+
+chart.xAxis[0].setExtremes(extremes.dataMin - 15 * 60 * 1000, extremes.dataMax + 15 * 60 * 1000);
+}
+
+</script>
+</head>
+<body onLoad="WriteTools()">
+
+<div id="container" style="min-width: 400px; height: 200px; margin: 0 auto"></div>
+<div id="zoomTools"></div>
+
+</body>
+</html>

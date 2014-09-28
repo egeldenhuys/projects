@@ -1,0 +1,359 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Runescape Online Players</title>
+		
+	<style>
+		.error
+		{
+			color:red;
+		}
+		.good
+		{
+			color:#1BC704;
+		}
+		.loadingStuff
+		{
+			color:#00AAFF;
+		}
+	</style>
+
+		<script src="js/jquery-1.8.3.min.js" type="text/javascript"></script>
+		<script src="js/highcharts.js" type="text/javascript"></script>
+		<script src="js/json2.js" type="text/javascript"></script>
+
+<!-- GOOGLE ANALYTICS START -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35919692-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<!-- GOOGLE ANALYTICS END -->
+
+		<script type="text/javascript">
+		$.ajaxSetup({timeout:3000});
+		
+		
+		var theData;
+		var reloadTime = 60000;
+		var chart;
+		var startPoint;
+		var part1 = false;
+		var part2 = false;
+		var done = false;
+		var localTimezone;
+		var timeOffset;
+		var functionRan = false;
+		var failCount = 0;
+		var tracking = false;
+		var extremes;
+		
+		$.get("https://dl.dropbox.com/u/133394013/3/StartPoint.txt",function(data){
+			startPoint = data;
+			var d = new Date();
+			var n = d.getTimezoneOffset();
+			localTimezone = "GMT+" + (-n / 60);
+			timeOffset = n * 60 * 1000;
+			startPoint = startPoint - n * 60 * 1000;
+			part1 = true;
+			
+			AddLoad();
+		});
+		
+	$.get("https://dl.dropbox.com/u/133394013/3/PlayerCount.txt",function(data){
+		
+		theData = data;
+		theData = theData.slice(0, -1);
+		part2 = true;
+		AddLoad();
+		});
+		
+		function AddLoad()
+		{
+		if(part1)
+		{
+			if(part2)
+			{
+				DoChart();
+				ShowMinMax();
+				extremes = chart.xAxis[0].getExtremes();
+				setTimeout("ReloadData()", 20000);
+			}
+		}
+	
+		}
+		
+		function DoChart(){
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                zoomType: 'x',
+                spacingRight: 20,
+				ignoreHiddenSeries: false
+            },
+            title: {
+                text: 'Runescape Online Player History',
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                    'Click and drag in the plot area to zoom in' :
+                    'Drag your finger over the plot to zoom in'
+            },
+            xAxis: {
+                type: 'datetime',
+				maxZoom: 600000, // 10 Minutes
+                title: {
+                    text: "Time (" + localTimezone + ")",
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Players Online'
+                },
+                showFirstLabel: false
+            },
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, 'rgba(2,0,0,0)']
+                        ]
+                    },
+                    lineWidth: 1,
+                    marker: {
+                        enabled: false,
+						fillColor: "#C92A2A",
+						lineColor: "#C92A2A",
+                        states: {
+                            hover: {
+                                enabled: true,
+                                radius: 3
+                            }
+                        }
+                    },
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null,
+					connectNulls: true
+                }
+            },
+    
+            series: [{
+                type: 'area',
+                name: 'Players',
+				pointInterval: 60000,
+				pointStart: parseInt(startPoint),
+				data: JSON.parse("[" + theData + "]")
+            }]
+        });
+		};
+
+
+function ReloadData()
+{
+	console.debug("Refreshing chart...");
+	
+	setTimeout("TimedOut()", 3500);
+	
+	document.getElementById("loading").innerHTML="Refreshing chart...";
+	document.getElementById("loading").className="loadingStuff";
+	
+		var ajaxTime= new Date().getTime();
+		$.get("https://dl.dropbox.com/u/133394013/3/PlayerCount.txt",function(data){
+		var totalTime = new Date().getTime() - ajaxTime;
+			theData = data;
+			theData = theData.slice(0, -1);
+			chart.series[0].setData(JSON.parse("[" + theData + "]"), true);
+			
+			var responseTime;
+			
+			if(totalTime >= 1000)
+			{
+			responseTime = (totalTime / 1000) + "s";
+			}
+			else
+			{
+			responseTime = totalTime + "ms";
+			}
+			
+			document.getElementById("loading").innerHTML="Chart has been refreshed. (" + responseTime + ")";
+			document.getElementById("loading").className="good";
+			setTimeout("ReloadData()", reloadTime);
+			functionRan = true;
+			failCount = 0;
+			if(tracking)
+			{
+			TrackData();
+			}
+			ShowMinMax();
+			console.debug("Chart has been successfully refreshed.");
+	});
+};
+
+function TimedOut()
+{
+	if (functionRan == false)
+	{
+		console.warn("Refresh failed, trying again in 5 seconds.");
+		document.getElementById("loading").innerHTML="Error refreshing chart.";
+		document.getElementById("loading").className="error";
+		setTimeout("ReloadData()", 5000);
+		failCount += 1;
+		console.debug("failCount = " + failCount);
+	}
+	
+	if(failCount > 5)
+	{
+	document.getElementById("loading").innerHTML="Are you still connected to the internet?";
+	document.getElementById("loading").className="error";
+	}
+	
+	functionRan = false;
+	
+}
+
+function ViewLastHour()
+{
+var d = new Date();
+var n = d.getTime();
+
+chart.xAxis[0].setExtremes((n - 3600000) - timeOffset, n - timeOffset + 5 * 60 * 1000);
+chart.showResetZoom();
+}
+
+function ViewLast24Hours()
+{
+var d = new Date();
+var n = d.getTime();
+
+chart.xAxis[0].setExtremes((n - 24 * 60 * 60 * 1000) - timeOffset, n - timeOffset + 15 * 60 * 1000);
+chart.showResetZoom();
+}
+
+function ResetZoom()
+{
+var d = new Date();
+var n = d.getTime();
+extremes = chart.xAxis[0].getExtremes();
+
+chart.xAxis[0].setExtremes(extremes.dataMin - 15 * 60 * 1000, extremes.dataMax + 15 * 60 * 1000);
+}
+
+function ToggleTracking()
+{
+	if(tracking == false)
+	{
+		tracking = true;
+		document.getElementById("btnTracking").innerHTML = "Disable Tracking";
+	}
+	else
+	{
+		tracking = false;
+		document.getElementById("btnTracking").innerHTML = "Enable Tracking";
+	}
+}
+
+function TrackData()
+{
+	extremes = chart.xAxis[0].getExtremes();
+	chart.xAxis[0].setExtremes(extremes.min + 20000, extremes.dataMax + 10 * 60 * 1000);
+}
+
+function ShowMinMax(total)
+{
+var playersOnline = chart.yAxis[0].getExtremes();
+
+var theString = "Max Players: " + AddCommas(playersOnline.dataMax) + "<br>Min Players: " + AddCommas(playersOnline.dataMin);
+document.getElementById("minMax").innerHTML = theString;
+
+AddCommas(playersOnline.dataMax);
+
+}
+
+function AddCommas(numberToMod)
+{
+	
+	var result;
+	var part1;
+	var part2;
+	var number = numberToMod.toString();
+
+	switch(number.length)
+	{
+		case 6:
+			part1 = number.slice(0, 3);
+			part2 = number.slice(3);
+			result = part1 + "," + part2;
+		break;
+		
+		case 5:
+			part1 = number.slice(0, 2);
+			part2 = number.slice(2);
+			result = part1 + "," + part2;
+		break;
+		
+		case 4:
+			part1 = number.slice(0, 1);
+			part2 = number.slice(1);
+			result = part1 + "," + part2;
+		break;
+	
+	}
+	
+	return result;
+	
+}
+
+function ShowExtremes()
+{
+	console.info('dataMax: '+ extremes.dataMax);
+	console.info('dataMin: '+ extremes.dataMin);
+	console.info('max: '+ extremes.max);
+	console.info('min: '+ extremes.min);
+
+}
+
+
+</script>
+	</head>
+	<body>
+	
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+<div id="loading" class="loadingStuff">Refreshing chart in 1 minute.</div>
+
+<hr>
+<button onclick="ViewLastHour()">Last Hour</button>
+<button onclick="ViewLast24Hours()">Last 24 Hours</button>
+<button onclick="ResetZoom()">Reset Zoom</button>
+<button onclick="ToggleTracking()" id="btnTracking">Enable Tracking</button>
+<button onclick="ShowExtremes()">Show Extremes</button>
+
+<div id="minMax"></div>
+<div>
+<p>Interval: 1 minute</p>
+<p>Version: 1.4.0</p>
+</div>
+
+	</body>
+</html>

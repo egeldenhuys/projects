@@ -1,0 +1,12 @@
+Last Update=2012-05-16 19:27:12
+Status=Offline
+Run Time=3197466.54692
+Raw Salmon=96
+Raw Trout=143
+Raw Pike=0
+Cooked Salmon=0
+Cooked Trout=0
+Cooked Pike=0
+Burnt Fish=0
+Price=25213
+Trades Done=10

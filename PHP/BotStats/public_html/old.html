@@ -1,0 +1,80 @@
+<html>
+<body>
+<head>
+<meta http-equiv="cache-control" content="public" />
+<title>Drop-B0T Old Statistics
+</title>
+<link rel='icon' href='images/favicon.ico' type='image/ico'/>
+</head>
+
+<!-- Header Start -->
+<table border="0" cellpadding="1" cellspacing="1" style="width: 177px; height: 30px;">
+	<tbody>
+		<tr>
+			<td dir="ltr" style="text-align: center;">
+				<big><a href="/index.php">Statistics</a></big></td>
+			<td style="text-align: center;">
+				<big><a href="/donators.php">Donators</a></big></td>
+		</tr>
+	</tbody>
+</table>
+<hr />
+<!-- Header End -->
+
+<h2><p>Old Statistics:</p></h2>
+
+<h3><u><p>Drop-B0T 01:</p></u></h3>
+<p>Reset on 2012-04-27 21:20:01</p>
+
+<p>
+<b>Run Time: </b> 213.8 hours <br />
+<b>Raw Salmon: </b> 48,624 <br />
+<b>Raw Trout: </b> 70,487 <br />
+<b>Cooked Salmon: </b> 11,150 <br />
+<b>Cooked Trout: </b> 8,776 <br />
+<b>Cooked Pike: </b> 203 <br />
+<b>Burnt Fish: </b> 1,872 <br />
+<b>Price of dropped fish: </b> 23,375,303 <br />
+<b>Trades Done: </b> 13,969
+<br />
+<br />
+<b>Reset on 2012-04-28 23:12:00</b> <br />
+
+Run Time: 14 Hours, 03 Minutes <br />
+Raw Salmon: 5,556 <br />
+Raw Trout: 8,007 <br />
+Raw Pike: 99 <br />
+Cooked Salmon: 2,587 <br />
+Cooked Trout: 2,029 <br />
+Cooked Pike: 12 <br />
+Burnt Fish: 526 <br />
+Price of dropped fish: 1,992,613 <br />
+Trades Done: 781 <br />
+</p>
+
+<?php
+// outputs e.g. 'Last modified: March 04 1998 20:43:59.'
+date_default_timezone_set('Australia/Sydney');
+echo '<hr />';
+echo '<p style="text-align: center;">';
+echo "Last modified: " . date ("Y-m-d g:i:s A T", getlastmod());
+echo '</p>';
+?>
+
+<?
+$ip=$_SERVER["REMOTE_ADDR"];
+
+if ($ip!="")
+    {
+    $hostname = gethostbyaddr($ip); 
+    date_default_timezone_set('Australia/Sydney');
+    $date = date('F j, Y, g:i:s a');
+    $ipfile = "admin/ips.txt";
+    $tempvar = fopen($ipfile, "a");
+    fwrite($tempvar, ('[' . $date . '] <span style="color:#FC9732">[O] </span>' . '<a href="http://whatismyipaddress.com/ip/' . $ip . '" target="_blank">' . $ip . '</a>' . ' (' . $hostname . ')' . "\n"));
+    fclose($tempvar);
+    }   
+?>
+
+</body>
+</html>
