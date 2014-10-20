@@ -47,15 +47,15 @@ HotKeySet("{F6}", "DisplayTotalStats")
 	Global $iGameX = 257
 	Global $iGameY = 26
 	Global $iDropSpeed1 = 7
-	Global $sUploadName = "Drop_B0T_01" ; Text file to store statistics in
-	Global $sUsername = "Drop-Bot01@bonshaw.e4ward.com" ; Email Address (Login)
+	Global $sUploadName = "" ; Text file to store statistics in
+	Global $sUsername = "" ; Email Address (Login)
 	
 	- Free Account -
 	Global $iGameX = 257
 	Global $iGameY = 122
 	Global $iDropSpeed1 = 7
-	Global $sUploadName = "Drop_B0T_01" ; Text file to store statistics in
-	Global $sUsername = "Drop-Bot01@bonshaw.e4ward.com" ; Email Address (Login)
+	Global $sUploadName = "" ; Text file to store statistics in
+	Global $sUsername = "" ; Email Address (Login)
 #ce
 
 ;;;; Variables ;;;;
@@ -63,8 +63,8 @@ HotKeySet("{F6}", "DisplayTotalStats")
 Global $iGameX = 257
 Global $iGameY = 122
 Global $iDropSpeed1 = 7
-Global $sUploadName = "Drop_B0T_01"
-Global $sUsername = "Drop-Bot01@bonshaw.e4ward.com"
+Global $sUploadName = ""
+Global $sUsername = ""
 
 Global $sPassword = ""
 Global $bAdvertise = True

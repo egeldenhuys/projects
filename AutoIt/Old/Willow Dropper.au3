@@ -23,9 +23,9 @@ HotKeySet("{F6}", "DisplayTotalStats")
 	Laptop = 257, 122
 	Computer = 300, 116
 
-	; Drop-Bot01@bonshaw.4ward.com
-	; Dp02@123.com
-	; Dp1@123.com
+	; 
+	; 
+	; 
 	; 7
 #ce
 
@@ -33,8 +33,8 @@ HotKeySet("{F6}", "DisplayTotalStats")
 	Global $iGameX = 257
 	Global $iGameY = 122
 	Global $iDropSpeed1 = 7
-	Global $sUploadName = "Drop_B0T_01"
-	Global $sUsername = "Drop-Bot01@bonshaw.e4ward.com"
+	Global $sUploadName = ""
+	Global $sUsername = ""
 #ce
 
 ;;;; Variables ;;;;
@@ -42,10 +42,10 @@ HotKeySet("{F6}", "DisplayTotalStats")
 Global $iGameX = 257
 Global $iGameY = 122
 Global $iDropSpeed1 = 7
-Global $sUploadName = "Drop_B0T_01"
-Global $sUsername = "Drop-Bot01@bonshaw.e4ward.com"
+Global $sUploadName = ""
+Global $sUsername = ""
 
-Global $sPassword = "123123"
+Global $sPassword = ""
 
 Global $bAdvertise = True
 

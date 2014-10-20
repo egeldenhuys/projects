@@ -11,8 +11,8 @@ begin
   NumberOfPlayers(HowManyPlayers);
   CurrentPlayer := 0;
 
-  Players[0].Name := 'a1@123qw.tk'; // Username
-  Players[0].Pass := '123123'; // Password
+  Players[0].Name := ''; // Username
+  Players[0].Pass := ''; // Password
   Players[0].Nick := ''; // 3-4 lowercase letters from username; used for random event detection
   Players[0].Active := True; // Set to true if you want to use Player 0
   Players[0].Pin := ''; // Leave blank if the player doesn't have a bank pin

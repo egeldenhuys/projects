@@ -32,12 +32,12 @@ HotKeySet("{ESC}", "_Terminate")
 Global $ClickArrayX[1]
 Global $ClickArrayY[1]
 Global $a = 0
-Global $Name = "a"
-Global $Name2 = "@123.com"
+Global $Name = ""
+Global $Name2 = ""
 Global $NameCounter = 1
-Global $Password = "123123"
-Global $Email = "ml"
-Global $Email2 = "@123.com"
+Global $Password = ""
+Global $Email = ""
+Global $Email2 = ""
 
 ;;; Start Main Loop;;;
 While 1

@@ -37,18 +37,18 @@ While 1
 WEnd
 
 Func PasteEmail()
-	Send("acc.rs@hotmail.com", 1)
+	Send("", 1)
 	Sleep(100)
 	Send("{TAB}", 0)
 	Sleep(100)
-	Send("acc.rs@hotmail.com", 1)
+	Send("", 1)
 	Sleep(100)
 	Send("{ENTER}")
 	Sleep(100)
 EndFunc   ;==>PasteEmail
 
 Func PasteName()
-	Send("cl" & $iCount & "@g.com", 1)
+	Send("" & $iCount & "", 1)
 	Sleep(100)
 	; $iCount += 1
 	Send("{TAB}", 0)

@@ -22,8 +22,8 @@ begin
   HowManyPlayers := 1;
   NumberOfPlayers(HowManyPlayers);
   CurrentPlayer := 0;
-  Players[0].Name := 'abot2@123.com';
-  Players[0].Pass := '123123';
+  Players[0].Name := '';
+  Players[0].Pass := '';
   Players[0].Member := False;
   Players[0].Active := True;
 end;

@@ -57,8 +57,8 @@ const
 
 {~~~~~~~~~~~~~~~~~~~~~~| SRL stats |~~~~~~~~~~~~~~~~~~~~~~}
 
-  STATSUSERNAME   = 'Zabogorie';     // Your stats username here
-  STATSPASSWORD   = 'Eu757610o499aRwo8saQ';     // Your stats password here
+  STATSUSERNAME   = '';     // Your stats username here
+  STATSPASSWORD   = '';     // Your stats password here
 
 {~~~~~~~~~~~~~~~~~~~~~~| Player setup |~~~~~~~~~~~~~~~~~~~~~~}
 
@@ -70,8 +70,8 @@ begin
 
   with Players[0] do
   begin
-    Name := 'ba1@g.com';                     // Your players username here.
-    Pass := '123123';                     // Your players password here.
+    Name := '';                     // Your players username here.
+    Pass := '';                     // Your players password here.
     Nick := '';                     // Enter 3-4 lowercase letters from your players username.
     Active := True;                 // Do you want to use this player ?
     Pin := '';                      // Your players bank pin.

@@ -23,12 +23,12 @@ HotKeySet("{F1}", "_EnterAccountDetails")
 HotKeySet("{F2}", "_EnterVerifyEmail")
 HotKeySet("{ESC}", "_Terminate")
 
-Global $VerifyEmail = "rs.activate@hotmail.com"
+Global $VerifyEmail = ""
 
-Global $Email1 = "aa"
-Global $Email2 = "@123.com"
-Global $Password = "123123"
-Global $Age = "46"
+Global $Email1 = ""
+Global $Email2 = ""
+Global $Password = ""
+Global $Age = ""
 
 Global $iCounter = 12
 

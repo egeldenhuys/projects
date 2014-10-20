@@ -8,8 +8,8 @@ begin
   NumberOfPlayers(HowManyPlayers);
   CurrentPlayer := 0;
 
-  Players[0].Name :='a1@123qw.tk';
-  Players[0].Pass :='123123';
+  Players[0].Name :='';
+  Players[0].Pass :='';
   Players[0].Nick :='';
   Players[0].Active:=True;
 end;
