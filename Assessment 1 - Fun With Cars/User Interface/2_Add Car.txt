@@ -1,0 +1,53 @@
++-------------------------------------------------------------------------------------------------------+
+|                                     Fun With Cars - Add a new car                                     |
+|-------------------------------------------------------------------------------------------------------|
+|                                                                                                       |
+|   +---------------------------+---------------------------------------------------+                   |
+|   |       Description         |                  Value                            |                   |
+|   +---------------------------|---------------------------------------------------+                   |
+|   |            Make           | Land Rover                                        |                   |
+|   |---------------------------|---------------------------------------------------|                   |
+|   |            Model          | Range Rover Evoque Coupe 2.2 TD4 4WD Pure         |                   |
+|   |---------------------------|---------------------------------------------------|                   |
+|   |            Year           | 2010                                              |                   |
+|   |---------------------------|---------------------------------------------------|                   |
+|   |         Base Cost ($)     | 56888                                             |                   |
+|   |---------------------------|---------------------------------------------------|                   |
+|   |  Dealer Markup Percentage | 3                                                 |                   |
+|   +---------------------------+---------------------------------------------------+                   |
+|                                                                                                       |
+|                                                                                                       |
+|                                                                                                       |
+|                                                                                                       |
+|                                                                                                       |
+| <Error Message>                                                                                       |
+|                                                                                                       |
++------------------------------------------| Information |----------------------------------------------+
+| <Information on selected car value>                                                                   |
+|                                                                                                       |
++--------------------------------------------| Controls |-----------------------------------------------+
+| [ENTER] - Go to the next field / Confirm details.                                                     |
+| [ESC] - Cancel and go to the main menu.                                                               |
+|                                                                                                       |
+|                                                                                                       |
+|                                                                                                       |
++-------------------------------------------------------------------------------------------------------+
+
+== Information ==
+Make: Enter the make of the car. E.G Holden
+Model: Enter the model of the car. E.G Commodore 3.8 i V6 Acclaim
+Year: Enter the year the car was manufactured. E.G 2012
+Base Cost: Enter the base cost of the car. E.G 16000
+Dealer Markup percentage: Enter the Dealer markup Percentage. E.G "3" for 3%
+
+== Errors ==
+"201i" is not a number. Please enter a number.
+Please enter all car details.
+The Car Model/Name is too long.
+
+== Controls ==
+When the last field is selected toggle:
+	[ENTER] - Confirm details
+
+Interface for adding a new car to the current database.
+Main -> Add Car

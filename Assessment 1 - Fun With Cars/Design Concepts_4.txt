@@ -1,0 +1,17 @@
+Fun With Cars - Design Concepts
+
+== Virtual Strings == (Input Collector)
+The console can be edited while the user is typing a string. The string is not lost.
+
+== Status Strip ==
+For displaying errors and information
+
+== Control Box ==
+Displays the keys that can be used to navigate the current screen.
+example:
+
+Arrow keys - Select cars.
+ENTER - Main menu
+ESC - Quit
+
+== List Box ==

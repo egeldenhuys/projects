@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Basic Express 2010
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FunWithCarsEvert_1", "FunWithCarsEvert_1\FunWithCarsEvert_1.vbproj", "{1A1C5E07-3D4D-4C1A-BA0D-2C88CD2ED49E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A1C5E07-3D4D-4C1A-BA0D-2C88CD2ED49E}.Debug|x86.ActiveCfg = Debug|x86
+		{1A1C5E07-3D4D-4C1A-BA0D-2C88CD2ED49E}.Debug|x86.Build.0 = Debug|x86
+		{1A1C5E07-3D4D-4C1A-BA0D-2C88CD2ED49E}.Release|x86.ActiveCfg = Release|x86
+		{1A1C5E07-3D4D-4C1A-BA0D-2C88CD2ED49E}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

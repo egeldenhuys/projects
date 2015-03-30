@@ -1,0 +1,73 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AddImage	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	100;"	kind:function	line:100	language:JavaScript
+Button	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	36;"	kind:class	line:36	language:JavaScript
+ButtonEvent	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	79;"	kind:function	line:79	language:JavaScript
+CANVAS_HEIGHT	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	13;"	kind:variable	line:13	language:JavaScript
+CANVAS_NAME	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	11;"	kind:variable	line:11	language:JavaScript
+CANVAS_WIDTH	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	12;"	kind:variable	line:12	language:JavaScript
+CheckCollision	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	196;"	kind:function	line:196	language:JavaScript
+CheckInput	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	356;"	kind:function	line:356	language:JavaScript
+ClearCanvas	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	129;"	kind:function	line:129	language:JavaScript
+ClickEvent	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	47;"	kind:function	line:47	language:JavaScript
+CreateButton	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	71;"	kind:function	line:71	language:JavaScript
+DEBUG_MODE	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	5;"	kind:variable	line:5	language:JavaScript
+DeathScreen	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui.js	34;"	kind:function	line:34	language:JavaScript
+DisplayScore	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	270;"	kind:function	line:270	language:JavaScript
+DrawButtons	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	101;"	kind:function	line:101	language:JavaScript
+DrawDebugGrid	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	80;"	kind:function	line:80	language:JavaScript
+DrawSquare	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	317;"	kind:function	line:317	language:JavaScript
+FOOD_COLOUR	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	9;"	kind:variable	line:9	language:JavaScript
+GAME_SPEED	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	6;"	kind:variable	line:6	language:JavaScript
+GRID_COLOUR	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	8;"	kind:variable	line:8	language:JavaScript
+GRID_SIZE	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	4;"	kind:variable	line:4	language:JavaScript
+GenerateFood	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	223;"	kind:function	line:223	language:JavaScript
+GetImage	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	118;"	kind:function	line:118	language:JavaScript
+GrowSnake	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	259;"	kind:function	line:259	language:JavaScript
+ImageLoaded	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	45;"	kind:function	line:45	language:JavaScript
+Init	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	31;"	kind:function	line:31	language:JavaScript
+InitButtons	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	20;"	kind:function	line:20	language:JavaScript
+InitGuiBuilder	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui_builder.js	4;"	kind:function	line:4	language:JavaScript
+LoadImages	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	75;"	kind:function	line:75	language:JavaScript
+Main	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	345;"	kind:function	line:345	language:JavaScript
+MainMenu	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui.js	4;"	kind:function	line:4	language:JavaScript
+MoveEvent	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	116;"	kind:function	line:116	language:JavaScript
+MovePiece	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	117;"	kind:function	line:117	language:JavaScript
+MoveSnake	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	161;"	kind:function	line:161	language:JavaScript
+PlaySound	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\sound.js	1;"	kind:function	line:1	language:JavaScript
+Reset	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	292;"	kind:function	line:292	language:JavaScript
+ResetGui	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui.js	59;"	kind:function	line:59	language:JavaScript
+SNAKE_COLOUR	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	7;"	kind:variable	line:7	language:JavaScript
+SetupCanvas	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	61;"	kind:function	line:61	language:JavaScript
+SetupSnake	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	105;"	kind:function	line:105	language:JavaScript
+SnakeDeath	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	283;"	kind:function	line:283	language:JavaScript
+SnakeGame	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui.js	19;"	kind:function	line:19	language:JavaScript
+StartGame	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	332;"	kind:function	line:332	language:JavaScript
+active	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui_builder.js	1;"	kind:variable	line:1	language:JavaScript
+alive	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	46;"	kind:variable	line:46	language:JavaScript
+btnIndex	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui_builder.js	2;"	kind:variable	line:2	language:JavaScript
+canvas	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	18;"	kind:variable	line:18	language:JavaScript
+canvasContext	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	19;"	kind:variable	line:19	language:JavaScript
+food	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	43;"	kind:class	line:43	language:JavaScript
+gridPerHeight	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	20;"	kind:variable	line:20	language:JavaScript
+gridPerWidth	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	19;"	kind:variable	line:19	language:JavaScript
+height	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	16;"	kind:variable	line:16	language:JavaScript
+imagesLoaded	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	21;"	kind:variable	line:21	language:JavaScript
+img.onload	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	110;"	kind:function	line:110	language:JavaScript
+lastBtnId	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	18;"	kind:variable	line:18	language:JavaScript
+lastBtnIndex	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\buttons.js	17;"	kind:variable	line:17	language:JavaScript
+lastKey	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	22;"	kind:variable	line:22	language:JavaScript
+mainLoop	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	45;"	kind:variable	line:45	language:JavaScript
+rootUrl	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	23;"	kind:variable	line:23	language:JavaScript
+running	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	24;"	kind:variable	line:24	language:JavaScript
+score	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	44;"	kind:variable	line:44	language:JavaScript
+snake	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	26;"	kind:class	line:26	language:JavaScript
+snake.body	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	28;"	kind:class	line:28	language:JavaScript
+tmpClickEvent	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui_builder.js	18;"	kind:function	line:18	language:JavaScript
+tmpMoveEvent	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\gui_builder.js	23;"	kind:function	line:23	language:JavaScript
+totalImages	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\main.js	22;"	kind:variable	line:22	language:JavaScript
+width	C:\Users\Evert\Dropbox\SDD\Assignments\Snake\Prototypes\Game\js\snake.js	15;"	kind:variable	line:15	language:JavaScript

@@ -1,0 +1,50 @@
++-------------------------------------------------------------------------------------------------------+
+|                                     Fun With Cars - Main Menu                                         |
+|-------------------------------------------------------------------------------------------------------|
+|                                                                                                       |
+|    +-------| Menu |--------+       +---| Database Information |---+                                   |
+|    | [A] - Add Car         |       | Current Database Name:       |                                   |
+|    |-----------------------|       | Default                      |                                   |
+|    | [E] - Edit Car        |       |------------------------------|                                   |
+|    |-----------------------|       | Cars In Database: 0          |                                   |
+|    | [V] - View Cars       |       +------------------------------+                                   |
+|    |-----------------------|                                                                          |
+|    | [S] - View Statistics |                                                                          |
+|    |-----------------------|                                                                          |
+|    | [R] - Remove Car      |                                                                          |
+|    |-----------------------|                                                                          |
+|    | [M] - Manage Databases|                                                                          |
+|    |-----------------------|                                                                          |
+|    | [Q] - Quit            |                                                                          |
+|    +-----------------------+                                                                          |
+|                                                                                                       |
+|                                                                                                       |
+|                                                                                                       |
+| <Error Message>                                                                                       |
+|                                                                                                       |
++------------------------------------------| Information |----------------------------------------------+
+| <Information on selected menu item>                                                                   |
+|                                                                                                       |
++--------------------------------------------| Controls |-----------------------------------------------+
+| Arrow Keys - Change selected menu item -OR- use the keys specified to the left of the menu item.      |
+| [ENTER] - Activate selected menu item                                                                 |
+| [ESC] - Close program.                                                                                |
+|                                                                                                       |
+|                                                                                                       |
++-------------------------------------------------------------------------------------------------------+
+
+== Information ==
+Add Car: Add a new car to the current database.
+Edit Car: Edit a car's details.
+View Cars: View the list of cars and their details.
+View Statistics: Display the statistics for the current database.
+Remove Car: Remove a car from the database.
+Manage Databases: Load, Create or delete a database.
+Quit - Close the program.
+
+== Errors ==
+"Z" is not an option.
+"DELETE" is not an option.
+
+This is the Main Interface for the program.
+Main
