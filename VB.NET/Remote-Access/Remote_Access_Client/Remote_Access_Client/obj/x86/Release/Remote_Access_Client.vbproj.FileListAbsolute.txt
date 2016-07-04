@@ -1,8 +1,0 @@
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\bin\Release\Remote_Access_Client.exe
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\bin\Release\Remote_Access_Client.pdb
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\bin\Release\Remote_Access_Client.xml
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\obj\x86\Release\Remote_Access_Client.Resources.resources
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\obj\x86\Release\Remote_Access_Client.vbproj.GenerateResource.Cache
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\obj\x86\Release\Remote_Access_Client.exe
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\obj\x86\Release\Remote_Access_Client.xml
-C:\Users\Evert\Dropbox\Git\Remote-Access\Remote_Access_Client\Remote_Access_Client\obj\x86\Release\Remote_Access_Client.pdb
